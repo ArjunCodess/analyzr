@@ -1,46 +1,122 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, BarChart2, Users, Globe } from "lucide-react";
-import Link from "next/link";
+import { Plus } from "lucide-react";
 import AddWebsite from "@/components/add-website";
-
-const websites = [
-  {
-    id: 1,
-    name: "landinga2i.co",
-    visitors: 1234,
-    pageviews: 5678,
-    bounceRate: 45.6,
-  },
-  {
-    id: 2,
-    name: "webdevprep.com",
-    visitors: 2345,
-    pageviews: 7890,
-    bounceRate: 38.2,
-  },
-  {
-    id: 3,
-    name: "landingai.co",
-    visitors: 3456,
-    pageviews: 9012,
-    bounceRate: 42.8,
-  },
-];
+import useUser from "@/hooks/useUser";
+import { useEffect, useState } from "react";
+import { supabase } from "@/config/supabase";
+import { WebsiteCard } from "@/components/website-card";
+import Loading from "@/components/loading";
+import { Analytics, Website, CountResult } from "@/types";
 
 export default function Dashboard() {
+  const { user } = useUser();
+  const [websites, setWebsites] = useState<Website[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAnalytics = async (
+    websiteId: string,
+    websiteName: string
+  ): Promise<Analytics> => {
+    try {
+      // Get unique visitors count
+      const { count: visitorsCount } = (await supabase
+        .from("visits")
+        .select("*", { count: "exact", head: true })
+        .eq("website_id", websiteName)) as CountResult;
+
+      // Get pageviews count
+      const { count: pageviewsCount } = (await supabase
+        .from("page_views")
+        .select("*", { count: "exact", head: true })
+        .eq("domain", websiteName)) as CountResult;
+
+      // Calculate bounce rate (users who viewed only one page)
+      const { data: pageViewsPerVisit } = await supabase
+        .from("page_views")
+        .select("domain")
+        .eq("domain", websiteName)
+        .order("created_at", { ascending: true });
+
+      const totalVisits = visitorsCount || 0;
+      const singlePageVisits = pageViewsPerVisit
+        ? totalVisits - pageViewsPerVisit.length
+        : 0;
+      const bounceRate =
+        totalVisits > 0 ? (singlePageVisits / totalVisits) * 100 : 0;
+
+      return {
+        visitors_count: visitorsCount || 0,
+        pageviews_count: pageviewsCount || 0,
+        bounce_rate: Math.max(Number(bounceRate.toFixed(2)), 0),
+      };
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      return {
+        visitors_count: 0,
+        pageviews_count: 0,
+        bounce_rate: 0,
+      };
+    }
+  };
+
+  useEffect(() => {
+    const fetchWebsites = async () => {
+      try {
+        setLoading(true);
+
+        const { data: websitesData, error } = await supabase
+          .from("websites")
+          .select("id, name, user_id, created_at")
+          .eq("user_id", user?.id)
+          .order("created_at", { ascending: false })
+          .returns<Pick<Website, "id" | "name" | "user_id" | "created_at">[]>();
+
+        if (error) throw error;
+        if (!websitesData) return;
+
+        const websitesWithAnalytics = await Promise.all(
+          websitesData.map(
+            async (
+              website: Pick<Website, "id" | "name" | "user_id" | "created_at">
+            ) => {
+              const analytics = await fetchAnalytics(website.id, website.name);
+              return {
+                ...website,
+                visitors_count: analytics.visitors_count,
+                pageviews_count: analytics.pageviews_count,
+                bounce_rate: analytics.bounce_rate,
+              } satisfies Website;
+            }
+          )
+        );
+
+        setWebsites(websitesWithAnalytics);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!user || !supabase) return;
+    fetchWebsites();
+  }, [user]);
+
+  if (loading) return <Loading text="Getting your websites..." />;
+
   return (
     <div className="min-h-screen bg-neutral-900/10 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-end items-center mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-neutral-100">Your Websites</h1>
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="secondary">
@@ -53,54 +129,17 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {websites.map((website) => (
-            <Link key={website.id} href={"/site/" + website.name}>
-              <Card className="bg-neutral-800 text-neutral-100 hover:bg-neutral-700 transition-colors duration-300">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {website.name}
-                  </CardTitle>
-                  <Globe className="h-4 w-4 text-neutral-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col space-y-1">
-                      <span className="text-2xl font-bold">
-                        {website.visitors.toLocaleString()}
-                      </span>
-                      <span className="text-xs text-neutral-400 flex items-center">
-                        <Users className="mr-1 h-3 w-3" /> Visitors
-                      </span>
-                    </div>
-                    <div className="flex flex-col space-y-1">
-                      <span className="text-2xl font-bold">
-                        {website.pageviews.toLocaleString()}
-                      </span>
-                      <span className="text-xs text-neutral-400 flex items-center">
-                        <BarChart2 className="mr-1 h-3 w-3" /> Page Views
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-2 border-t border-neutral-700">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Bounce Rate</span>
-                      <span className="text-sm font-bold">
-                        {website.bounceRate.toFixed(1)}%
-                      </span>
-                    </div>
-                    <div className="mt-2 h-2 bg-neutral-700 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-neutral-50 rounded-full"
-                        style={{ width: `${website.bounceRate}%` }}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        {websites.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-neutral-400">No websites added yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {websites.map((website) => (
+              <WebsiteCard key={website.id} website={website} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -65,7 +65,7 @@ export default function AddWebsite() {
   };
 
   useEffect(() => {
-    const invalidChars = ["http", "://", ":", "/", "https"];
+    const invalidChars = ["http", "://", "/", "https"];
     const hasInvalidChars = invalidChars.some((char) =>
       website.trim().includes(char)
     );
@@ -133,7 +133,7 @@ src="https://analyzr.vercel.app/tracking-script.js"></script>`}
               </p>
             </div>
             <Button onClick={() => router.push(`/site/${website.trim()}`)} variant="secondary">
-              Continue to Dashboard
+              Continue to See Analytics
             </Button>
           </div>
         )}
