@@ -1,4 +1,5 @@
 "use client";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -11,13 +12,13 @@ export default function Snippet() {
   const react_snippet = `<script
   defer
   data-domain="${website}"
-  src="http://localhost:3000/tracking-script.js"
+  src="https://getanalyzr.vercel.app/tracking-script.js"
 >
 </script>`;
   const next_snippet = `<Script
   defer
   data-domain="${website}"
-  src="http://localhost:3000/tracking-script.js"
+  src="https://getanalyzr.vercel.app/tracking-script.js"
 />`;
 
   return (

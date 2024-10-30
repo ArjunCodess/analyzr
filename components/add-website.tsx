@@ -124,7 +124,7 @@ export default function AddWebsite() {
                 readOnly
                 className="font-mono text-sm text-black"
                 value={`<script defer data-domain="${website}"
-src="https://analyzr.vercel.app/tracking-script.js"></script>`}
+src="https://getanalyzr.vercel.app/tracking-script.js"></script>`}
               />
               <p className="text-sm text-muted-foreground">
                 Paste this snippet in the{" "}

@@ -36,12 +36,12 @@ export default function Header() {
             <Link href="/" className="flex-shrink-0">
               <Image
                 src="/favicon.ico"
-                alt="Analyzr Logo"
+                alt="getanalyzr Logo"
                 width={32}
                 height={32}
               />
             </Link>
-            <Link href="/" className="text-xl font-bold">
+            <Link href="/" className="text-2xl font-bold">
               Analyzr
             </Link>
           </div>

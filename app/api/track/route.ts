@@ -14,7 +14,7 @@ interface TrackingData {
   source?: string;
 }
 
-export async function OPTIONS() {
+export async function OPTIONS(_request: NextRequest) {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
