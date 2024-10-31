@@ -11,103 +11,32 @@ import { Plus } from "lucide-react";
 import AddWebsite from "@/components/add-website";
 import useUser from "@/hooks/useUser";
 import { useEffect, useState } from "react";
-import { supabase } from "@/config/supabase";
 import { WebsiteCard } from "@/components/website-card";
 import Loading from "@/components/loading";
-import { Analytics, Website, CountResult } from "@/types";
+import { Website } from "@/types";
+import { fetchWebsitesWithAnalytics } from "@/actions/fetchAnalytics";
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const { user } = useUser();
   const [websites, setWebsites] = useState<Website[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchAnalytics = async (
-    websiteId: string,
-    websiteName: string
-  ): Promise<Analytics> => {
-    try {
-      // Get unique visitors count
-      const { count: visitorsCount } = (await supabase
-        .from("visits")
-        .select("*", { count: "exact", head: true })
-        .eq("website_id", websiteName)) as CountResult;
-
-      // Get pageviews count
-      const { count: pageviewsCount } = (await supabase
-        .from("page_views")
-        .select("*", { count: "exact", head: true })
-        .eq("domain", websiteName)) as CountResult;
-
-      // Calculate bounce rate (users who viewed only one page)
-      const { data: pageViewsPerVisit } = await supabase
-        .from("page_views")
-        .select("domain")
-        .eq("domain", websiteName)
-        .order("created_at", { ascending: true });
-
-      const totalVisits = visitorsCount || 0;
-      const singlePageVisits = pageViewsPerVisit
-        ? totalVisits - pageViewsPerVisit.length
-        : 0;
-      const bounceRate =
-        totalVisits > 0 ? (singlePageVisits / totalVisits) * 100 : 0;
-
-      return {
-        visitors_count: visitorsCount || 0,
-        pageviews_count: pageviewsCount || 0,
-        bounce_rate: Math.max(Number(bounceRate.toFixed(2)), 0),
-      };
-    } catch (error) {
-      console.error("Error fetching analytics:", error);
-      return {
-        visitors_count: 0,
-        pageviews_count: 0,
-        bounce_rate: 0,
-      };
-    }
-  };
-
   useEffect(() => {
-    const fetchWebsites = async () => {
+    const loadWebsites = async () => {
+      if (!user?.id) return;
+      
       try {
         setLoading(true);
-
-        const { data: websitesData, error } = await supabase
-          .from("websites")
-          .select("id, name, user_id, created_at")
-          .eq("user_id", user?.id)
-          .order("created_at", { ascending: false })
-          .returns<Pick<Website, "id" | "name" | "user_id" | "created_at">[]>();
-
-        if (error) throw error;
-        if (!websitesData) return;
-
-        const websitesWithAnalytics = await Promise.all(
-          websitesData.map(
-            async (
-              website: Pick<Website, "id" | "name" | "user_id" | "created_at">
-            ) => {
-              const analytics = await fetchAnalytics(website.id, website.name);
-              return {
-                ...website,
-                visitors_count: analytics.visitors_count,
-                pageviews_count: analytics.pageviews_count,
-                bounce_rate: analytics.bounce_rate,
-              } satisfies Website;
-            }
-          )
-        );
-
-        setWebsites(websitesWithAnalytics);
+        const websitesData = await fetchWebsitesWithAnalytics(user.id);
+        setWebsites(websitesData);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error loading websites:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    if (!user || !supabase) return;
-    fetchWebsites();
+    loadWebsites();
   }, [user]);
 
   if (loading) return <Loading text="Getting your websites..." />;

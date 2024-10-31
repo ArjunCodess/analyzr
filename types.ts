@@ -75,8 +75,10 @@ export interface PageView {
 }
 
 export interface Visit {
-  source: string;
+  session_id: string;
+  event: 'session_start' | 'session_end' | 'pageview';
   created_at: string;
+  source: string | null;
 }
 
 export interface CustomEvent {
@@ -94,4 +96,44 @@ export interface GroupedView {
 export interface GroupedSource {
   source: string;
   visits: number;
+}
+
+export interface AnalyticsCardProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}
+
+export interface TopPagesCardProps {
+  groupedPageViews: GroupedView[];
+  abbreviateNumber: (n: number) => string;
+}
+
+export interface TopSourcesCardProps {
+  groupedPageSources: GroupedSource[];
+  abbreviateNumber: (n: number) => string;
+}
+
+export interface CustomEventsCarouselProps {
+  groupedCustomEvents: Record<string, number>;
+  activeCustomEventTab: string;
+  setActiveCustomEventTab: (tab: string) => void;
+}
+
+export interface CustomEventsDetailsProps {
+  customEvents: CustomEvent[];
+  activeCustomEventTab: string;
+  setActiveCustomEventTab: (tab: string) => void;
+  formatTimeStamp: (date: string) => string;
+}
+
+export interface DangerZoneProps {
+  isDeleting: boolean;
+  onDelete: () => Promise<void>;
+} 
+
+export interface SessionDurationStats {
+  averageDuration: string;
+  shortestSession: string;
+  longestSession: string;
 }

@@ -9,7 +9,6 @@ import {
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye } from "lucide-react";
@@ -17,6 +16,7 @@ import { Eye } from "lucide-react";
 interface AnalyticsChartProps {
   pageViews: PageView[];
   visits: Visit[];
+  timePeriod: string;
 }
 
 const chartConfig = {
@@ -30,33 +30,107 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).replace(/(\d+)(?=(st|nd|rd|th))/, (match) => {
+    const num = parseInt(match);
+    const suffix = ['th', 'st', 'nd', 'rd'][(num % 10 > 3 ? 0 : num % 10)];
+    return `${num}${suffix}`;
+  });
+};
+
 export default function AnalyticsChart({
   pageViews,
   visits,
+  timePeriod,
 }: AnalyticsChartProps) {
-  // Group data by date
-  const groupedData = pageViews.reduce((acc, view) => {
-    const date = new Date(view.created_at).toLocaleDateString();
-    if (!acc[date]) {
-      acc[date] = { date, pageViews: 0, visits: 0 };
-    }
-    acc[date].pageViews++;
-    return acc;
-  }, {} as Record<string, { date: string; pageViews: number; visits: number }>);
+  const filterDataByTimePeriod = (date: Date) => {
+    if (timePeriod === "0") return true;
+    
+    const now = new Date();
+    const timeAgo = new Date(date);
+    const diffInHours = (now.getTime() - timeAgo.getTime()) / (1000 * 60 * 60);
 
-  // Add visits data
-  visits.forEach((visit) => {
-    const date = new Date(visit.created_at).toLocaleDateString();
-    if (!groupedData[date]) {
-      groupedData[date] = { date, pageViews: 0, visits: 0 };
+    switch (timePeriod) {
+      case "last 1 hour":
+        return diffInHours <= 1;
+      case "last 1 day":
+        return diffInHours <= 24;
+      case "last 7 days":
+        return diffInHours <= 24 * 7;
+      case "last 30 days":
+        return diffInHours <= 24 * 30;
+      case "last 90 days":
+        return diffInHours <= 24 * 90;
+      case "last 365 days":
+        return diffInHours <= 24 * 365;
+      default:
+        return true;
     }
-    groupedData[date].visits++;
-  });
+  };
 
-  // Convert to array and sort by date
+  const groupedData = pageViews
+    .filter(view => filterDataByTimePeriod(new Date(view.created_at)))
+    .reduce((acc, view) => {
+      const date = new Date(view.created_at).toLocaleDateString();
+      if (!acc[date]) {
+        acc[date] = { date, pageViews: 0, visits: 0 };
+      }
+      acc[date].pageViews++;
+      return acc;
+    }, {} as Record<string, { date: string; pageViews: number; visits: number }>);
+
+  visits
+    .filter(visit => filterDataByTimePeriod(new Date(visit.created_at)))
+    .forEach(visit => {
+      const date = new Date(visit.created_at).toLocaleDateString();
+      if (!groupedData[date]) {
+        groupedData[date] = { date, pageViews: 0, visits: 0 };
+      }
+      groupedData[date].visits++;
+    });
+
   const chartData = Object.values(groupedData).sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
+
+  const CustomTooltip = ({ 
+    active, 
+    payload, 
+    label 
+  }: {
+    active?: boolean;
+    payload?: Array<{
+      fill: string;
+      name: string;
+      value: number;
+    }>;
+    label?: string;
+  }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-neutral-900 border border-neutral-800 p-3 rounded-lg shadow-lg">
+          <p className="text-neutral-300 mb-2">{formatDate(label!)}</p>
+          {payload.map((pld, index: number) => (
+            <div key={index} className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: pld.fill }}
+              />
+              <span className="text-neutral-300">
+                {pld.name}: {pld.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
@@ -95,13 +169,8 @@ export default function AnalyticsChart({
               tick={{ fill: "#9CA3AF" }}
             />
             <ChartTooltip
-              content={<ChartTooltipContent />}
-              contentStyle={{
-                backgroundColor: "#1F2937",
-                border: "1px solid #374151",
-                borderRadius: "6px",
-                color: "#E5E7EB",
-              }}
+              content={<CustomTooltip />}
+              cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
             />
             <ChartLegend
               content={<ChartLegendContent />}
@@ -111,11 +180,13 @@ export default function AnalyticsChart({
             />
             <Bar
               dataKey="visits"
+              name={chartConfig.visits.label}
               fill={chartConfig.visits.color}
               radius={[4, 4, 0, 0]}
             />
             <Bar
               dataKey="pageViews"
+              name={chartConfig.pageViews.label}
               fill={chartConfig.pageViews.color}
               radius={[4, 4, 0, 0]}
             />

@@ -80,8 +80,8 @@
     request.setRequestHeader("Content-Type", "application/json");
 
     request.onreadystatechange = function () {
-      if (request.readyState === 4) {
-        options && options.callback && options.callback();
+      if (request.readyState === 4 && options && options.callback) {
+        options.callback();
       }
     };
 
@@ -116,7 +116,7 @@
   window.addEventListener("popstate", trackPageView);
   // Event listener for hashchange (hash-based navigation)
   window.addEventListener("hashchange", trackPageView);
-  document.addEventListener("click", function (event) {
+  document.addEventListener("click", function () {
     setTimeout(() => {
       if (window.location.pathname !== initialPathname) {
         trackPageView();
