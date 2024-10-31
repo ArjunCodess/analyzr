@@ -6,7 +6,6 @@ import { Website } from "@/types";
 interface Analytics {
   visitors_count: number;
   pageviews_count: number;
-  bounce_rate: number;
 }
 
 interface CountResult {
@@ -30,31 +29,15 @@ export async function fetchAnalytics(
       .select("*", { count: "exact", head: true })
       .eq("domain", websiteName)) as CountResult;
 
-    // Calculate bounce rate (users who viewed only one page)
-    const { data: pageViewsPerVisit } = await supabase
-      .from("page_views")
-      .select("domain")
-      .eq("domain", websiteName)
-      .order("created_at", { ascending: true });
-
-    const totalVisits = visitorsCount || 0;
-    const singlePageVisits = pageViewsPerVisit
-      ? totalVisits - pageViewsPerVisit.length
-      : 0;
-    const bounceRate =
-      totalVisits > 0 ? (singlePageVisits / totalVisits) * 100 : 0;
-
     return {
       visitors_count: visitorsCount || 0,
       pageviews_count: pageviewsCount || 0,
-      bounce_rate: Math.max(Number(bounceRate.toFixed(2)), 0),
     };
   } catch (error) {
     console.error("Error fetching analytics:", error);
     return {
       visitors_count: 0,
       pageviews_count: 0,
-      bounce_rate: 0,
     };
   }
 }
@@ -78,7 +61,6 @@ export async function fetchWebsitesWithAnalytics(userId: string): Promise<Websit
           ...website,
           visitors_count: analytics.visitors_count,
           pageviews_count: analytics.pageviews_count,
-          bounce_rate: analytics.bounce_rate,
         } satisfies Website;
       })
     );
