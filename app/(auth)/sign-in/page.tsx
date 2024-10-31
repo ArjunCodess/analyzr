@@ -35,7 +35,7 @@ export default function SignIn() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `https://getanalyzr.vercel.app/dashboard`,
         },
       });
 
