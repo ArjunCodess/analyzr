@@ -110,7 +110,7 @@ export default function GeneralAnalytics({
 
   if (filteredPageViews.length === 0 && filteredVisits.length === 0) {
     return (
-      <Card className="border-neutral-800 bg-neutral-900/20 backdrop-blur-sm">
+      <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
         <CardContent className="p-6 text-center">
           <p className="text-neutral-100">
             No analytics available for the given time range.
@@ -189,67 +189,65 @@ export default function GeneralAnalytics({
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex justify-between items-center">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Users className="h-6 w-6" />
                 <span className="mt-2 text-sm text-neutral-500">
                   Total Visits
                 </span>
               </div>
-              <span className="text-base md:text-lg lg:text-xl font-bold tracking-tight text-white">
+              <span className="text-base md:text-lg font-bold tracking-tight text-white">
                 {abbreviateNumber(totalVisits.length)}
               </span>
             </CardTitle>
           </CardHeader>
         </Card>
 
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex justify-between items-center">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <MousePointerClick className="h-6 w-6" />
                 <span className="mt-2 text-sm text-neutral-500">
                   Page Views
                 </span>
               </div>
-              <span className="text-base md:text-lg lg:text-xl font-bold tracking-tight text-white">
+              <span className="text-base md:text-lg font-bold tracking-tight text-white">
                 {abbreviateNumber(pageViews.length)}
               </span>
             </CardTitle>
           </CardHeader>
         </Card>
-      </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex justify-between items-center">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Activity className="h-6 w-6" />
                 <span className="mt-2 text-sm text-neutral-500">
                   Pages/Session
                 </span>
               </div>
-              <span className="text-base md:text-lg lg:text-xl font-bold tracking-tight text-white">
+              <span className="text-base md:text-lg font-bold tracking-tight text-white">
                 {calculatePagesPerSession(pageViews, totalVisits)}
               </span>
             </CardTitle>
           </CardHeader>
         </Card>
 
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex justify-between items-center">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Clock className="h-6 w-6" />
                 <span className="mt-2 text-sm text-neutral-500">
-                  Active Users (last 10 minutes)
+                  Active Users (~10 mins)
                 </span>
               </div>
-              <span className="text-base md:text-lg lg:text-xl font-bold tracking-tight text-white">
+              <span className="text-base md:text-lg font-bold tracking-tight text-white">
                 {activeUsers}
               </span>
             </CardTitle>
@@ -265,198 +263,207 @@ export default function GeneralAnalytics({
         />
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
+          <CardHeader className="py-0 pt-4 pb-2">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between">
               <p>Top Pages</p>
-              <BarChart2 className="w-7 h-7" />
+              <BarChart2 className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[400px]">
-              {groupedPageViews.map((view, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
-                >
-                  <span className="text-sm text-neutral-100">/{view.page}</span>
-                  <span className="font-medium text-white">
-                    {abbreviateNumber(view.visits)}
-                  </span>
-                </div>
-              ))}
-            </ScrollArea>
-          </CardContent>
-        </Card>
-
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
-              <p>
-                Top Visit Sources
-                <span className="ml-2 text-xs italic text-neutral-500">
-                  add ?utm={"{source}"} to track
-                </span>
-              </p>
-              <ArrowBigUpDash className="w-7 h-7" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[400px]">
-              {sourcesWithPercentages.map((source, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
-                >
-                  <span className="text-sm text-neutral-100">
-                    {source.source === "" ? "Direct Traffic" : `?utm=${source.source}`}
-                  </span>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm text-neutral-400">
-                      {source.percentage}%
-                    </span>
+          <CardContent className="p-0 relative">
+            <ScrollArea className="h-[300px]">
+              <div className="px-4 space-y-2 pb-4">
+                {groupedPageViews.map((view, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                  >
+                    <span className="text-sm text-neutral-100">/{view.page}</span>
                     <span className="font-medium text-white">
-                      {abbreviateNumber(source.visits)}
+                      {abbreviateNumber(view.visits)}
                     </span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </ScrollArea>
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
           </CardContent>
         </Card>
-      </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
+          <CardHeader className="py-0 pt-4 pb-2">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between">
+              <p>Top Visit Sources</p>
+              <ArrowBigUpDash className="w-6 h-6" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0 relative">
+            <ScrollArea className="h-[300px]">
+              <div className="px-4 space-y-2 pb-4">
+                {sourcesWithPercentages.map((source, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                  >
+                    <span className="text-sm text-neutral-100">
+                      {source.source === "" ? "Direct Traffic" : `?utm=${source.source}`}
+                    </span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm text-neutral-400">
+                        {source.percentage}%
+                      </span>
+                      <span className="font-medium text-white">
+                        {abbreviateNumber(source.visits)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
+          </CardContent>
+        </Card>
+
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
+          <CardHeader className="py-0 pt-4 pb-2">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between">
               <p>Visitor Locations</p>
-              <Globe className="w-7 h-7" />
+              <Globe className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[400px]">
-              {locationStats.map((location, index) => (
-                <div
-                  key={index}
-                  className="group flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
-                >
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="flex-shrink-0">
-                      <Image 
-                        src={getCountryFlagUrl(location.country)}
-                        alt={`${location.country} flag`}
-                        width="28"
-                        height="21"
-                        className="shadow-sm"
-                        loading="lazy"
-                      />
+          <CardContent className="p-0 relative">
+            <ScrollArea className="h-[300px]">
+              <div className="px-4 space-y-2 pb-4">
+                {locationStats.map((location, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                  >
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="flex-shrink-0">
+                        <Image 
+                          src={getCountryFlagUrl(location.country)}
+                          alt={`${location.country} flag`}
+                          width="28"
+                          height="21"
+                          className="shadow-sm"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="flex flex-col min-w-[200px]">
+                        <span className="text-sm text-neutral-100">
+                          {location.city}
+                        </span>
+                        <span className="text-xs text-neutral-400">
+                          {location.region}, {location.country}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-col min-w-[200px]">
-                      <span className="text-sm text-neutral-100">
-                        {location.city}
-                      </span>
-                      <span className="text-xs text-neutral-400">
-                        {location.region}, {location.country}
-                      </span>
-                    </div>
+                    <span className="font-medium text-white">
+                      {abbreviateNumber(location.visits)}
+                    </span>
                   </div>
-                  <span className="font-medium text-white">
-                    {abbreviateNumber(location.visits)}
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </ScrollArea>
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
           </CardContent>
         </Card>
 
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
+          <CardHeader className="py-0 pt-4 pb-2">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between">
               <p>Operating Systems</p>
-              <Monitor className="w-7 h-7" />
+              <Monitor className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[400px]">
-              {osStats.map((os, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
-                >
-                  <div className="flex items-center gap-2">
-                    {getOSIcon(os.operating_system)}
-                    <span className="text-sm text-neutral-100">
-                      {os.operating_system}
+          <CardContent className="p-0 relative">
+            <ScrollArea className="h-[300px]">
+              <div className="px-4 space-y-2 pb-4">
+                {osStats.map((os, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                  >
+                    <div className="flex items-center gap-2">
+                      {getOSIcon(os.operating_system)}
+                      <span className="text-sm text-neutral-100">
+                        {os.operating_system}
+                      </span>
+                    </div>
+                    <span className="font-medium text-white">
+                      {abbreviateNumber(os.visits)}
                     </span>
                   </div>
-                  <span className="font-medium text-white">
-                    {abbreviateNumber(os.visits)}
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </ScrollArea>
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
           </CardContent>
         </Card>
-      </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
+          <CardHeader className="py-0 pt-4 pb-2">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between">
               <p>Device Types</p>
-              <Smartphone className="w-7 h-7" />
+              <Smartphone className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[400px]">
-              {deviceStats.map(({ deviceType, count }) => (
-                <div
-                  key={deviceType}
-                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
-                >
-                  <div className="flex items-center gap-2">
-                    {getDeviceIcon(deviceType)}
-                    <span className="text-sm text-neutral-100">
-                      {capitalizeFirstLetter(deviceType)}
+          <CardContent className="p-0 relative">
+            <ScrollArea className="h-[300px]">
+              <div className="px-4 space-y-2 pb-4">
+                {deviceStats.map(({ deviceType, count }) => (
+                  <div
+                    key={deviceType}
+                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                  >
+                    <div className="flex items-center gap-2">
+                      {getDeviceIcon(deviceType)}
+                      <span className="text-sm text-neutral-100">
+                        {capitalizeFirstLetter(deviceType)}
+                      </span>
+                    </div>
+                    <span className="font-medium text-white">
+                      {abbreviateNumber(count)}
                     </span>
                   </div>
-                  <span className="font-medium text-white">
-                    {abbreviateNumber(count)}
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </ScrollArea>
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
           </CardContent>
         </Card>
 
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+        <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
+          <CardHeader className="py-0 pt-4 pb-2">
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between">
               <p>Browsers</p>
-              <Globe className="w-7 h-7" />
+              <Globe className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[400px]">
-              {browserStats.map(({ browser, count }) => (
-                <div
-                  key={browser}
-                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
-                >
-                  <div className="flex items-center gap-2">
-                    {getBrowserIcon(browser)}
-                    <span className="text-sm text-neutral-100">
-                      {browser}
+          <CardContent className="p-0 relative">
+            <ScrollArea className="h-[300px]">
+              <div className="px-4 space-y-2 pb-4">
+                {browserStats.map(({ browser, count }) => (
+                  <div
+                    key={browser}
+                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                  >
+                    <div className="flex items-center gap-2">
+                      {getBrowserIcon(browser)}
+                      <span className="text-sm text-neutral-100">
+                        {browser}
+                      </span>
+                    </div>
+                    <span className="font-medium text-white">
+                      {abbreviateNumber(count)}
                     </span>
                   </div>
-                  <span className="font-medium text-white">
-                    {abbreviateNumber(count)}
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </ScrollArea>
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
           </CardContent>
         </Card>
       </div>

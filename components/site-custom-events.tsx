@@ -54,12 +54,12 @@ export default function SiteCustomEvents({
                 onClick={() => setActiveCustomEventTab(eventName)}
               >
                 <CardHeader>
-                  <CardTitle className="text-neutral-300">
+                  <CardTitle className="text-neutral-300 text-sm md:text-base">
                     {eventName}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-base md:text-lg lg:text-xl font-bold tracking-tight text-white">
+                  <p className="text-sm md:text-base lg:text-lg font-bold tracking-tight text-white">
                     {count}
                   </p>
                 </CardContent>
@@ -73,7 +73,7 @@ export default function SiteCustomEvents({
 
       <Card className="mt-8 border-neutral-800 bg-neutral-900/20 backdrop-blur-sm">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-neutral-300">Event Details</CardTitle>
+          <CardTitle className="text-neutral-300 text-sm md:text-base">Event Details</CardTitle>
           {activeCustomEventTab && (
             <Button
               onClick={() => setActiveCustomEventTab("")}
@@ -97,10 +97,10 @@ export default function SiteCustomEvents({
                   key={event.id}
                   className="border my-2 border-neutral-800 py-4 transition-colors hover:bg-neutral-900/20"
                 >
-                  <p className="mb-2 text-sm font-medium text-neutral-100">
+                  <p className="mb-2 text-xs md:text-sm font-medium text-neutral-100">
                     {event.event_name}
                   </p>
-                  <p className="text-neutral-100">{event.message}</p>
+                  <p className="text-xs md:text-sm text-neutral-100">{event.message}</p>
                   <p className="mt-2 text-xs text-neutral-500">
                     {formatTimeStamp(event.timestamp)}
                   </p>

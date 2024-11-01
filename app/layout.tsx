@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gradient-to-b from-neutral-950 to-neutral-900 text-neutral-50 ${inter.className} antialiased`}
+        className={`bg-gradient-to-b from-black to-neutral-950 text-neutral-50 ${inter.className} antialiased`}
       >
         <Header />
         {children}

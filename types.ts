@@ -78,6 +78,7 @@ export interface PageView {
   operating_system?: string;
   device_type?: string;
   browser_name?: string;
+  browser_version?: string;
   screen_resolution?: string;
 }
 

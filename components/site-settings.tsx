@@ -46,8 +46,8 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
   return (
     <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex items-center gap-2">
-          <Trash2 className="h-5 w-5" />
+        <CardTitle className="text-neutral-300 text-sm md:text-base lg:text-lg flex items-center gap-2">
+          <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
           <span>Danger Zone</span>
         </CardTitle>
       </CardHeader>
@@ -56,10 +56,10 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
           <div className="rounded-lg border border-red-900/10 bg-red-900/20 p-4">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-red-400">
+                <p className="text-xs md:text-sm font-medium text-red-400">
                   Delete Website
                 </p>
-                <p className="text-sm text-neutral-400">
+                <p className="text-xs md:text-sm text-neutral-400">
                   Permanently delete this website and all of its data
                 </p>
               </div>
@@ -75,10 +75,10 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
                 </AlertDialogTrigger>
                 <AlertDialogContent className="border-neutral-800 bg-neutral-900">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-neutral-100">
+                    <AlertDialogTitle className="text-sm md:text-base text-neutral-100">
                       Are you absolutely sure?
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="text-neutral-400">
+                    <AlertDialogDescription className="text-xs md:text-sm text-neutral-400">
                       This action cannot be undone. This will permanently delete
                       your website analytics data and remove all related
                       resources.

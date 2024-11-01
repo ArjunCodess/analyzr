@@ -103,7 +103,7 @@ export default function AnalyticsPage() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div className="space-y-1">
-            <h1 className="text-base md:text-2xl lg:text-3xl font-bold tracking-tight text-white flex flex-row">
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white flex flex-row">
               Analytics for {website}
               <Link href={`https://${website}`} target="_blank">
                 <ArrowUpRightIcon className="md:w-10 md:h-10" />
@@ -144,7 +144,7 @@ export default function AnalyticsPage() {
         </div>
 
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="mb-8 grid w-full grid-cols-3 bg-neutral-900/20 p-1 backdrop-blur-sm">
+          <TabsList className="mb-8 grid w-full grid-cols-3 bg-neutral-900/30 border border-neutral-900 p-1 backdrop-blur-sm">
             <TabsTrigger
               value="general"
               className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white"

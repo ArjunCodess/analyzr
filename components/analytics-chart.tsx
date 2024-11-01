@@ -1,17 +1,17 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Visit, PageView } from "@/types";
+import { useState } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye } from "lucide-react";
 
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
 } from "@/components/ui/chart";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye } from "lucide-react";
 
 interface AnalyticsChartProps {
   pageViews: PageView[];
@@ -22,7 +22,7 @@ interface AnalyticsChartProps {
 const chartConfig = {
   visits: {
     label: "Visitors",
-    color: "#60a5fa",
+    color: "#3b82f6",
   },
   pageViews: {
     label: "Page Views",
@@ -48,6 +48,8 @@ export default function AnalyticsChart({
   visits,
   timePeriod,
 }: AnalyticsChartProps) {
+  const [activeTab, setActiveTab] = useState("pageViews");
+
   const filterDataByTimePeriod = (date: Date) => {
     if (timePeriod === "0") return true;
     
@@ -73,25 +75,27 @@ export default function AnalyticsChart({
     }
   };
 
-  const groupedData = pageViews
-    .filter(view => filterDataByTimePeriod(new Date(view.created_at)))
-    .reduce((acc, view) => {
-      const date = new Date(view.created_at).toLocaleDateString();
+  const groupedData = visits
+    .filter(visit => filterDataByTimePeriod(new Date(visit.created_at)))
+    .reduce((acc, visit) => {
+      const date = new Date(visit.created_at).toLocaleDateString();
       if (!acc[date]) {
-        acc[date] = { date, pageViews: 0, visits: 0 };
+        acc[date] = { date, pageViews: 0, visits: 1 };
+      } else {
+        acc[date].visits++;
       }
-      acc[date].pageViews++;
       return acc;
     }, {} as Record<string, { date: string; pageViews: number; visits: number }>);
 
-  visits
-    .filter(visit => filterDataByTimePeriod(new Date(visit.created_at)))
-    .forEach(visit => {
-      const date = new Date(visit.created_at).toLocaleDateString();
+  pageViews
+    .filter(view => filterDataByTimePeriod(new Date(view.created_at)))
+    .forEach(view => {
+      const date = new Date(view.created_at).toLocaleDateString();
       if (!groupedData[date]) {
-        groupedData[date] = { date, pageViews: 0, visits: 0 };
+        groupedData[date] = { date, pageViews: 1, visits: 0 };
+      } else {
+        groupedData[date].pageViews++;
       }
-      groupedData[date].visits++;
     });
 
   const chartData = Object.values(groupedData).sort(
@@ -133,20 +137,24 @@ export default function AnalyticsChart({
   };
 
   return (
-    <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+    <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
-          Visitors / Page Views Graph
+          Analytics Graph
           <Eye className="w-7 h-7" />
-        </CardTitle>
+        </CardTitle> 
       </CardHeader>
-      <CardContent className="flex -ml-6 mr-4">
+      <CardContent className="flex -ml-12 -mr-2 pb-0">
         <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[500px] w-full">
-          <BarChart
+          <AreaChart
             accessibilityLayer
             data={chartData}
             style={{
               backgroundColor: "transparent",
+            }}
+            margin={{
+              left: 12,
+              right: 12,
             }}
           >
             <CartesianGrid vertical={false} stroke="#374151" />
@@ -170,29 +178,51 @@ export default function AnalyticsChart({
             />
             <ChartTooltip
               content={<CustomTooltip />}
-              cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+              cursor={false}
             />
-            <ChartLegend
-              content={<ChartLegendContent />}
-              wrapperStyle={{
-                color: "#E5E7EB",
-              }}
-            />
-            <Bar
-              dataKey="visits"
-              name={chartConfig.visits.label}
-              fill={chartConfig.visits.color}
-              radius={[4, 4, 0, 0]}
-            />
-            <Bar
-              dataKey="pageViews"
-              name={chartConfig.pageViews.label}
-              fill={chartConfig.pageViews.color}
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
+            {activeTab === "visitors" && (
+              <Area
+                dataKey="visits"
+                name={chartConfig.visits.label}
+                stroke={chartConfig.visits.color}
+                fill={chartConfig.visits.color}
+                fillOpacity={0.4}
+                type="natural"
+              />
+            )}
+            {activeTab === "pageViews" && (
+              <Area
+                dataKey="pageViews"
+                name={chartConfig.pageViews.label}
+                stroke={chartConfig.pageViews.color}
+                fill={chartConfig.pageViews.color}
+                fillOpacity={0.4}
+                type="natural"
+              />
+            )}
+          </AreaChart>
         </ChartContainer>
       </CardContent>
+      <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full px-6 pt-4 pb-6"
+        >
+          <TabsList className="grid w-full grid-cols-2 bg-neutral-900/30 border border-neutral-900 p-1 backdrop-blur-sm">
+            <TabsTrigger
+              value="pageViews"
+              className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white"
+            >
+              Page Views
+            </TabsTrigger>
+            <TabsTrigger
+              value="visitors"
+              className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white"
+            >
+              Visitors
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
     </Card>
   );
 }
