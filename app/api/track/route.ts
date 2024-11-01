@@ -18,7 +18,6 @@ interface TrackingData {
   operatingSystem?: string;
   deviceType?: string;
   browserName?: string;
-  screenResolution?: string;
 }
 
 export async function OPTIONS() {
@@ -39,7 +38,6 @@ export async function POST(request: NextRequest) {
       operatingSystem,
       deviceType,
       browserName,
-      screenResolution
     } = data;
     
     if (!url.includes(domain)) {
@@ -61,7 +59,6 @@ export async function POST(request: NextRequest) {
           operating_system: operatingSystem || 'Unknown',
           device_type: deviceType || 'Unknown',
           browser_name: browserName || 'Unknown',
-          screen_resolution: screenResolution || 'Unknown'
         }]);
 
       if (error) throw error;

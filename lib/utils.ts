@@ -136,15 +136,7 @@ export function groupByBrowser(pageViews: PageView[]) {
   }));
 }
 
-export function groupByScreenResolution(pageViews: PageView[]) {
-  const grouped = pageViews.reduce((acc: Record<string, number>, view) => {
-    const resolution = view.screen_resolution || 'Unknown';
-    acc[resolution] = (acc[resolution] || 0) + 1;
-    return acc;
-  }, {});
-
-  return Object.entries(grouped).map(([resolution, count]) => ({
-    resolution,
-    count
-  }));
+// Add this helper function
+export function capitalizeFirstLetter(string: string): string {
+  return string.charAt(0).toUpperCase() + string.toLowerCase().slice(1);
 }

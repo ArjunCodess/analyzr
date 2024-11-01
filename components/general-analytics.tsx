@@ -23,7 +23,7 @@ import {
   groupByDeviceType,
   groupByLocation,
   groupByOS,
-  groupByScreenResolution,
+  capitalizeFirstLetter,
 } from "@/lib/utils";
 import { fetchActiveUsers } from "@/actions/fetchActiveUsers";
 import { useEffect, useState } from "react";
@@ -186,9 +186,6 @@ export default function GeneralAnalytics({
   // Get grouped data
   const deviceStats = groupByDeviceType(pageViews);
   const browserStats = groupByBrowser(pageViews);
-
-  // Get additional stats
-  const screenResolutionStats = groupByScreenResolution(pageViews);
 
   return (
     <>
@@ -422,7 +419,7 @@ export default function GeneralAnalytics({
                   <div className="flex items-center gap-2">
                     {getDeviceIcon(deviceType)}
                     <span className="text-sm text-neutral-100">
-                      {deviceType}
+                      {capitalizeFirstLetter(deviceType)}
                     </span>
                   </div>
                   <span className="font-medium text-white">
@@ -452,37 +449,6 @@ export default function GeneralAnalytics({
                     {getBrowserIcon(browser)}
                     <span className="text-sm text-neutral-100">
                       {browser}
-                    </span>
-                  </div>
-                  <span className="font-medium text-white">
-                    {abbreviateNumber(count)}
-                  </span>
-                </div>
-              ))}
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
-              <p>Screen Resolutions</p>
-              <Monitor className="w-7 h-7" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[400px]">
-              {screenResolutionStats.map(({ resolution, count }) => (
-                <div
-                  key={resolution}
-                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
-                >
-                  <div className="flex items-center gap-2">
-                    <Monitor className="w-4 h-4 text-neutral-400" />
-                    <span className="text-sm text-neutral-100">
-                      {resolution}
                     </span>
                   </div>
                   <span className="font-medium text-white">

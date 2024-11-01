@@ -13,7 +13,6 @@ export interface UserAgentInfo {
   userAgent: string;
   platform: string;
   language: string;
-  screenResolution: string;
   viewportSize: string;
   isMobile: boolean;
 }

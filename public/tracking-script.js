@@ -122,7 +122,6 @@
       const operatingSystem = getOperatingSystem();
       const deviceType = getDeviceType();
       const { browserName } = getBrowserInfo();
-      const screenResolution = `${window.screen.width}x${window.screen.height}`;
 
       var payload = {
         event: eventName,
@@ -135,7 +134,6 @@
         operatingSystem,
         deviceType,
         browserName,
-        screenResolution
       };
 
       sendRequest(payload, options);
