@@ -13,7 +13,7 @@ export default function Header() {
   const pathname = usePathname();
   const { user, loading } = useUser();
 
-  const protectedPaths = ["/dashboard", "/settings", "/settings/api"];
+  const protectedPaths = ["/dashboard", "/settings"];
   const isProtectedPath = protectedPaths.some((path) =>
     pathname?.startsWith(path)
   );
@@ -41,7 +41,7 @@ export default function Header() {
                 height={32}
               />
             </Link>
-            <Link href="/" className="text-2xl font-bold">
+            <Link href="/" className="text-xl md:text-2xl font-bold">
               Analyzr
             </Link>
           </div>

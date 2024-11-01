@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     if (!url.includes(domain)) {
       return NextResponse.json(
         { error: "Domain mismatch" },
-        { headers: corsHeaders }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { success: true, data }, 
-      { headers: corsHeaders }
+      { status: 201, headers: corsHeaders }
     );
   } catch (error) {
     console.error('Error processing tracking request:', error);

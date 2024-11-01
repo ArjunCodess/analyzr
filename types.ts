@@ -157,3 +157,29 @@ export interface GroupedOS {
   operating_system: string;
   visits: number;
 }
+
+export interface User {
+  id: string;
+  email?: string;
+  // add other user properties as needed
+}
+
+export interface ApiKeyResponse {
+  api: string;
+  user_id: string;
+}
+
+export interface CustomEventPayload {
+  name: string;
+  domain: string;
+  description?: string;
+}
+
+export interface CodeCompProps {
+  apiKey?: string;
+}
+
+export interface UserData {
+  api: string;
+  user_id: string;
+}

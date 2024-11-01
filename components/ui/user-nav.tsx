@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Settings, Key, LogOut, LayoutDashboard } from "lucide-react";
+import { Key, LogOut, LayoutDashboard } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/config/supabase";
 import useUser from "@/hooks/useUser";
@@ -53,13 +53,9 @@ export function UserNav() {
           <LayoutDashboard className="mr-2 h-4 w-4" />
           <span>Dashboard</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push("/settings/api")}>
-          <Key className="mr-2 h-4 w-4" />
-          <span>API Keys</span>
-        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => router.push("/settings")}>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Settings</span>
+          <Key className="mr-2 h-4 w-4" />
+          <span>Settings & API Keys</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
@@ -69,4 +65,4 @@ export function UserNav() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}
