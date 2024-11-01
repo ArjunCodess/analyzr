@@ -12,10 +12,13 @@ interface TrackingData {
   url: string;
   event: 'session_start' | 'pageview' | 'session_end';
   source?: string;
-  city: string;
-  region: string;
-  country: string;
-  operatingSystem: string;
+  city?: string;
+  region?: string;
+  country?: string;
+  operatingSystem?: string;
+  deviceType?: string;
+  browserName?: string;
+  screenResolution?: string;
 }
 
 export async function OPTIONS() {
@@ -33,7 +36,10 @@ export async function POST(request: NextRequest) {
       city,
       region,
       country,
-      operatingSystem
+      operatingSystem,
+      deviceType,
+      browserName,
+      screenResolution
     } = data;
     
     if (!url.includes(domain)) {
@@ -52,7 +58,10 @@ export async function POST(request: NextRequest) {
           city: city || 'Unknown',
           region: region || 'Unknown',
           country: country || 'Unknown',
-          operating_system: operatingSystem || 'Unknown'
+          operating_system: operatingSystem || 'Unknown',
+          device_type: deviceType || 'Unknown',
+          browser_name: browserName || 'Unknown',
+          screen_resolution: screenResolution || 'Unknown'
         }]);
 
       if (error) throw error;
@@ -63,11 +72,7 @@ export async function POST(request: NextRequest) {
         .from("visits")
         .insert([{ 
           website_id: domain, 
-          source: source || "Direct",
-          city: city || 'Unknown',
-          region: region || 'Unknown',
-          country: country || 'Unknown',
-          operating_system: operatingSystem || 'Unknown'
+          source: source || "direct",
         }]);
 
       if (error) throw error;

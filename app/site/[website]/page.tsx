@@ -155,7 +155,7 @@ export default function AnalyticsPage() {
               value="custom-events"
               className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white"
             >
-              Custom Events
+              Events
             </TabsTrigger>
             <TabsTrigger
               value="settings"

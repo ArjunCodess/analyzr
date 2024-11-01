@@ -80,3 +80,71 @@ export function groupByOS(pageViews: PageView[]): GroupedOS[] {
     .map(([operating_system, visits]) => ({ operating_system, visits }))
     .sort((a, b) => b.visits - a.visits);
 }
+
+// Add country code mapping
+const countryToCode: Record<string, string> = {
+  'India': 'in',
+  'United States': 'us',
+  'United Kingdom': 'gb',
+  'Canada': 'ca',
+  'Australia': 'au',
+  'Germany': 'de',
+  'France': 'fr',
+  'Japan': 'jp',
+  'China': 'cn',
+  'Brazil': 'br',
+  'Russia': 'ru',
+  'South Korea': 'kr',
+  'Italy': 'it',
+  'Spain': 'es',
+  'Mexico': 'mx',
+  'Indonesia': 'id',
+  'Netherlands': 'nl',
+  'Singapore': 'sg',
+  'Sweden': 'se',
+  'Switzerland': 'ch',
+};
+
+export function getCountryFlagUrl(countryName: string): string {
+  const countryCode = countryToCode[countryName]?.toLowerCase() || 'un';
+  return `https://flagcdn.com/256x192/${countryCode}.png`;
+}
+
+export function groupByDeviceType(pageViews: PageView[]) {
+  const grouped = pageViews.reduce((acc: Record<string, number>, view) => {
+    const deviceType = view.device_type || 'Unknown';
+    acc[deviceType] = (acc[deviceType] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.entries(grouped).map(([deviceType, count]) => ({
+    deviceType,
+    count
+  }));
+}
+
+export function groupByBrowser(pageViews: PageView[]) {
+  const grouped = pageViews.reduce((acc: Record<string, number>, view) => {
+    const browser = view.browser_name || 'Unknown';
+    acc[browser] = (acc[browser] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.entries(grouped).map(([browser, count]) => ({
+    browser,
+    count
+  }));
+}
+
+export function groupByScreenResolution(pageViews: PageView[]) {
+  const grouped = pageViews.reduce((acc: Record<string, number>, view) => {
+    const resolution = view.screen_resolution || 'Unknown';
+    acc[resolution] = (acc[resolution] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.entries(grouped).map(([resolution, count]) => ({
+    resolution,
+    count
+  }));
+}

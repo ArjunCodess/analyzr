@@ -88,10 +88,41 @@
 
   checkSessionStatus();
 
+  function getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+      return "tablet";
+    }
+    if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+      return "mobile";
+    }
+    // Check if it's a laptop by screen size
+    if (window.screen.width <= 1366 && window.screen.height <= 768) {
+      return "laptop";
+    }
+    return "desktop";
+  }
+
+  function getBrowserInfo() {
+    const ua = navigator.userAgent;
+    let browserName = "Unknown";
+
+    if (ua.indexOf("Chrome") > -1) browserName = "Chrome";
+    else if (ua.indexOf("Safari") > -1) browserName = "Safari";
+    else if (ua.indexOf("Firefox") > -1) browserName = "Firefox";
+    else if (ua.indexOf("Edge") > -1) browserName = "Edge";
+    else if (ua.indexOf("Opera") > -1) browserName = "Opera";
+
+    return { browserName };
+  }
+
   async function trigger(eventName, options) {
     try {
       const locationData = await getUserLocation();
       const operatingSystem = getOperatingSystem();
+      const deviceType = getDeviceType();
+      const { browserName } = getBrowserInfo();
+      const screenResolution = `${window.screen.width}x${window.screen.height}`;
 
       var payload = {
         event: eventName,
@@ -101,7 +132,10 @@
         city: locationData.city,
         region: locationData.region,
         country: locationData.country,
-        operatingSystem
+        operatingSystem,
+        deviceType,
+        browserName,
+        screenResolution
       };
 
       sendRequest(payload, options);
@@ -144,7 +178,9 @@
   var initialPathname = window.location.pathname;
 
   window.addEventListener("popstate", trackPageView);
+
   window.addEventListener("hashchange", trackPageView);
+
   document.addEventListener("click", function () {
     setTimeout(() => {
       if (window.location.pathname !== initialPathname) {

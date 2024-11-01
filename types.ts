@@ -20,7 +20,6 @@ export interface UserAgentInfo {
 
 export interface PageMetrics {
   timeOnPage: number;
-  scrollDepth: number;
   docHeight: number;
   referrer: string;
   lastActiveTime: number;
@@ -78,6 +77,9 @@ export interface PageView {
   region?: string;
   country?: string;
   operating_system?: string;
+  device_type?: string;
+  browser_name?: string;
+  screen_resolution?: string;
 }
 
 export interface Visit {

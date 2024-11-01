@@ -9,14 +9,21 @@ import {
   Clock,
   Globe,
   Monitor,
+  Smartphone,
+  Laptop,
+  Tablet,
 } from "lucide-react";
 import { PageView, Visit, GroupedView, GroupedSource } from "@/types";
 import AnalyticsChart from "@/components/analytics-chart";
 import {
   abbreviateNumber,
   calculatePagesPerSession,
+  getCountryFlagUrl,
+  groupByBrowser,
+  groupByDeviceType,
   groupByLocation,
   groupByOS,
+  groupByScreenResolution,
 } from "@/lib/utils";
 import { fetchActiveUsers } from "@/actions/fetchActiveUsers";
 import { useEffect, useState } from "react";
@@ -25,9 +32,15 @@ import {
   FaApple, 
   FaLinux, 
   FaAndroid, 
-  FaMobile 
+  FaMobile, 
+  FaChrome, 
+  FaFirefox, 
+  FaSafari, 
+  FaEdge, 
+  FaOpera 
 } from "react-icons/fa";
 import { BsQuestionCircle } from "react-icons/bs";
+import Image from "next/image";
 
 interface GeneralAnalyticsProps {
   pageViews: PageView[];
@@ -137,6 +150,45 @@ export default function GeneralAnalytics({
         return <BsQuestionCircle className="w-4 h-4 text-neutral-400" />;
     }
   };
+
+  const getDeviceIcon = (deviceType: string) => {
+    switch(deviceType.toLowerCase()) {
+      case 'desktop':
+        return <Monitor className="w-4 h-4 text-blue-400" />;
+      case 'laptop':
+        return <Laptop className="w-4 h-4 text-green-400" />;
+      case 'tablet':
+        return <Tablet className="w-4 h-4 text-purple-400" />;
+      case 'mobile':
+        return <Smartphone className="w-4 h-4 text-red-400" />;
+      default:
+        return <BsQuestionCircle className="w-4 h-4 text-neutral-400" />;
+    }
+  };
+
+  const getBrowserIcon = (browserName: string) => {
+    switch(browserName.toLowerCase()) {
+      case 'chrome':
+        return <FaChrome className="w-4 h-4 text-blue-400" />;
+      case 'firefox':
+        return <FaFirefox className="w-4 h-4 text-orange-400" />;
+      case 'safari':
+        return <FaSafari className="w-4 h-4 text-blue-300" />;
+      case 'edge':
+        return <FaEdge className="w-4 h-4 text-blue-500" />;
+      case 'opera':
+        return <FaOpera className="w-4 h-4 text-red-400" />;
+      default:
+        return <BsQuestionCircle className="w-4 h-4 text-neutral-400" />;
+    }
+  };
+
+  // Get grouped data
+  const deviceStats = groupByDeviceType(pageViews);
+  const browserStats = groupByBrowser(pageViews);
+
+  // Get additional stats
+  const screenResolutionStats = groupByScreenResolution(pageViews);
 
   return (
     <>
@@ -291,13 +343,27 @@ export default function GeneralAnalytics({
               {locationStats.map((location, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                  className="group flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
                 >
-                  <div className="flex flex-col">
-                    <span className="text-sm text-neutral-100">{location.city}</span>
-                    <span className="text-xs text-neutral-400">
-                      {location.region}, {location.country}
-                    </span>
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="flex-shrink-0">
+                      <Image 
+                        src={getCountryFlagUrl(location.country)}
+                        alt={`${location.country} flag`}
+                        width="28"
+                        height="21"
+                        className="shadow-sm"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="flex flex-col min-w-[200px]">
+                      <span className="text-sm text-neutral-100">
+                        {location.city}
+                      </span>
+                      <span className="text-xs text-neutral-400">
+                        {location.region}, {location.country}
+                      </span>
+                    </div>
                   </div>
                   <span className="font-medium text-white">
                     {abbreviateNumber(location.visits)}
@@ -330,6 +396,97 @@ export default function GeneralAnalytics({
                   </div>
                   <span className="font-medium text-white">
                     {abbreviateNumber(os.visits)}
+                  </span>
+                </div>
+              ))}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+              <p>Device Types</p>
+              <Smartphone className="w-7 h-7" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[400px]">
+              {deviceStats.map(({ deviceType, count }) => (
+                <div
+                  key={deviceType}
+                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                >
+                  <div className="flex items-center gap-2">
+                    {getDeviceIcon(deviceType)}
+                    <span className="text-sm text-neutral-100">
+                      {deviceType}
+                    </span>
+                  </div>
+                  <span className="font-medium text-white">
+                    {abbreviateNumber(count)}
+                  </span>
+                </div>
+              ))}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+
+        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+              <p>Browsers</p>
+              <Globe className="w-7 h-7" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[400px]">
+              {browserStats.map(({ browser, count }) => (
+                <div
+                  key={browser}
+                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                >
+                  <div className="flex items-center gap-2">
+                    {getBrowserIcon(browser)}
+                    <span className="text-sm text-neutral-100">
+                      {browser}
+                    </span>
+                  </div>
+                  <span className="font-medium text-white">
+                    {abbreviateNumber(count)}
+                  </span>
+                </div>
+              ))}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+              <p>Screen Resolutions</p>
+              <Monitor className="w-7 h-7" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[400px]">
+              {screenResolutionStats.map(({ resolution, count }) => (
+                <div
+                  key={resolution}
+                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                >
+                  <div className="flex items-center gap-2">
+                    <Monitor className="w-4 h-4 text-neutral-400" />
+                    <span className="text-sm text-neutral-100">
+                      {resolution}
+                    </span>
+                  </div>
+                  <span className="font-medium text-white">
+                    {abbreviateNumber(count)}
                   </span>
                 </div>
               ))}
