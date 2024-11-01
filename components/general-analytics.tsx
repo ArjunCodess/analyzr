@@ -7,15 +7,27 @@ import {
   Users,
   Activity,
   Clock,
+  Globe,
+  Monitor,
 } from "lucide-react";
 import { PageView, Visit, GroupedView, GroupedSource } from "@/types";
 import AnalyticsChart from "@/components/analytics-chart";
 import {
   abbreviateNumber,
   calculatePagesPerSession,
+  groupByLocation,
+  groupByOS,
 } from "@/lib/utils";
 import { fetchActiveUsers } from "@/actions/fetchActiveUsers";
 import { useEffect, useState } from "react";
+import { 
+  FaWindows, 
+  FaApple, 
+  FaLinux, 
+  FaAndroid, 
+  FaMobile 
+} from "react-icons/fa";
+import { BsQuestionCircle } from "react-icons/bs";
 
 interface GeneralAnalyticsProps {
   pageViews: PageView[];
@@ -105,6 +117,26 @@ export default function GeneralAnalytics({
   };
 
   const sourcesWithPercentages = calculateSourcePercentages(groupedPageSources);
+
+  const locationStats = groupByLocation(pageViews);
+  const osStats = groupByOS(pageViews);
+
+  const getOSIcon = (os: string) => {
+    switch(os.toLowerCase()) {
+      case 'windows':
+        return <FaWindows className="w-4 h-4 text-blue-400" />;
+      case 'macos':
+        return <FaApple className="w-4 h-4 text-gray-300" />;
+      case 'linux':
+        return <FaLinux className="w-4 h-4 text-yellow-400" />;
+      case 'android':
+        return <FaAndroid className="w-4 h-4 text-green-400" />;
+      case 'ios':
+        return <FaMobile className="w-4 h-4 text-gray-300" />;
+      default:
+        return <BsQuestionCircle className="w-4 h-4 text-neutral-400" />;
+    }
+  };
 
   return (
     <>
@@ -239,6 +271,66 @@ export default function GeneralAnalytics({
                       {abbreviateNumber(source.visits)}
                     </span>
                   </div>
+                </div>
+              ))}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+              <p>Visitor Locations</p>
+              <Globe className="w-7 h-7" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[400px]">
+              {locationStats.map((location, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                >
+                  <div className="flex flex-col">
+                    <span className="text-sm text-neutral-100">{location.city}</span>
+                    <span className="text-xs text-neutral-400">
+                      {location.region}, {location.country}
+                    </span>
+                  </div>
+                  <span className="font-medium text-white">
+                    {abbreviateNumber(location.visits)}
+                  </span>
+                </div>
+              ))}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+
+        <Card className="border-neutral-800 bg-neutral-950/20 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-neutral-300 text-base md:text-lg lg:text-xl flex flex-row justify-between">
+              <p>Operating Systems</p>
+              <Monitor className="w-7 h-7" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[400px]">
+              {osStats.map((os, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                >
+                  <div className="flex items-center gap-2">
+                    {getOSIcon(os.operating_system)}
+                    <span className="text-sm text-neutral-100">
+                      {os.operating_system}
+                    </span>
+                  </div>
+                  <span className="font-medium text-white">
+                    {abbreviateNumber(os.visits)}
+                  </span>
                 </div>
               ))}
             </ScrollArea>

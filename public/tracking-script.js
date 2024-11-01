@@ -3,18 +3,52 @@
 
   var location = window.location;
   var document = window.document;
+  var navigator = window.navigator;
 
   var scriptElement = document.currentScript;
   var dataDomain = scriptElement.getAttribute("data-domain");
-  // we get the utm query in order to track the source of each visit
   let queryString = location.search;
   const params = new URLSearchParams(queryString);
   var source = params.get("utm");
 
   var endpoint = "https://getanalyzr.vercel.app/api/track";
 
+  async function getUserLocation() {
+    try {
+      const response = await fetch('https://ipapi.co/json/');
+      if (!response.ok) {
+        throw new Error('Failed to fetch location data');
+      }
+      const data = await response.json();
+      return {
+        city: data.city || 'Unknown',
+        region: data.region || 'Unknown',
+        country: data.country_name || 'Unknown',
+      };
+    } catch (error) {
+      console.error('Error fetching location:', error);
+      return {
+        city: 'Unknown',
+        region: 'Unknown',
+        country: 'Unknown',
+      };
+    }
+  }
+
+  function getOperatingSystem() {
+    var userAgent = navigator.userAgent;
+    var os = "Unknown";
+
+    if (userAgent.indexOf("Windows") !== -1) os = "Windows";
+    if (userAgent.indexOf("Mac OS") !== -1) os = "MacOS";
+    if (userAgent.indexOf("Linux") !== -1) os = "Linux";
+    if (userAgent.indexOf("Android") !== -1) os = "Android";
+    if (userAgent.indexOf("iPhone") !== -1 || userAgent.indexOf("iPad") !== -1) os = "iOS";
+
+    return os;
+  }
+
   function generateSessionId() {
-    // Generate a random session ID
     return "session-" + Math.random().toString(36).substr(2, 9);
   }
 
@@ -25,13 +59,8 @@
     );
 
     if (!sessionId || !expirationTimestamp) {
-      // Generate a new session ID
       sessionId = generateSessionId();
-
-      // Set the expiration timestamp
       expirationTimestamp = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-      // Store the session ID and expiration timestamp in localStorage
       localStorage.setItem("session_id", sessionId);
       localStorage.setItem("session_expiration_timestamp", expirationTimestamp);
       trackSessionStart();
@@ -42,7 +71,7 @@
       expirationTimestamp: parseInt(expirationTimestamp),
     };
   }
-  // Function to check if the session is expired
+
   function isSessionExpired(expirationTimestamp) {
     return Date.now() >= expirationTimestamp;
   }
@@ -53,27 +82,34 @@
       localStorage.removeItem("session_id");
       localStorage.removeItem("session_expiration_timestamp");
       trackSessionEnd();
-      // if visitor landed on the website after expiration we need to create new session in order to count it as a new visit.
       initializeSession();
     }
   }
 
-  // Call checkSessionStatus() when the user lands on the website
   checkSessionStatus();
 
-  // Function to send tracking events to the endpoint
-  function trigger(eventName, options) {
-    var payload = {
-      event: eventName,
-      url: location.href,
-      domain: dataDomain,
-      source,
-    };
+  async function trigger(eventName, options) {
+    try {
+      const locationData = await getUserLocation();
+      const operatingSystem = getOperatingSystem();
 
-    sendRequest(payload, options);
+      var payload = {
+        event: eventName,
+        url: location.href,
+        domain: dataDomain,
+        source,
+        city: locationData.city,
+        region: locationData.region,
+        country: locationData.country,
+        operatingSystem
+      };
+
+      sendRequest(payload, options);
+    } catch (error) {
+      console.error('Error in trigger:', error);
+    }
   }
 
-  // Function to send HTTP requests
   function sendRequest(payload, options) {
     var request = new XMLHttpRequest();
     request.open("POST", endpoint, true);
@@ -88,39 +124,31 @@
     request.send(JSON.stringify(payload));
   }
 
-  // Queue of tracking events
   var queue = (window.your_tracking && window.your_tracking.q) || [];
   window.your_tracking = trigger;
   for (var i = 0; i < queue.length; i++) {
     trigger.apply(this, queue[i]);
   }
 
-  // Function to track page views
   function trackPageView() {
-    // Trigger a custom event indicating page view
     trigger("pageview");
   }
   function trackSessionStart() {
-    // Trigger a custom event indicating page view
     trigger("session_start");
   }
   function trackSessionEnd() {
     trigger("session_end");
   }
 
-  // Track page view when the script is loaded
   trackPageView();
   var initialPathname = window.location.pathname;
 
-  // Event listener for popstate (back/forward navigation)
   window.addEventListener("popstate", trackPageView);
-  // Event listener for hashchange (hash-based navigation)
   window.addEventListener("hashchange", trackPageView);
   document.addEventListener("click", function () {
     setTimeout(() => {
       if (window.location.pathname !== initialPathname) {
         trackPageView();
-        // Update the initialPathname for future comparisons
         initialPathname = window.location.pathname;
       }
     }, 3000);

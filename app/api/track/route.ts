@@ -12,6 +12,10 @@ interface TrackingData {
   url: string;
   event: 'session_start' | 'pageview' | 'session_end';
   source?: string;
+  city: string;
+  region: string;
+  country: string;
+  operatingSystem: string;
 }
 
 export async function OPTIONS() {
@@ -19,31 +23,60 @@ export async function OPTIONS() {
 }
 
 export async function POST(request: NextRequest) {
-  const data = await request.json() as TrackingData;
-  const { domain, url, event, source } = data;
-  
-  if (!url.includes(domain)) {
-    return NextResponse.json(
-      { error: "The script points to a different domain than the current URL. Make sure they match." },
-      { headers: corsHeaders }
-    );
-  }
-
   try {
-    if (event === "session_start") {
-      await supabase
-        .from("visits")
-        .insert([{ website_id: domain, source: source ?? "Direct" }])
-        .select();
+    const data = await request.json() as TrackingData;
+    const { 
+      domain, 
+      url, 
+      event, 
+      source,
+      city,
+      region,
+      country,
+      operatingSystem
+    } = data;
+    
+    if (!url.includes(domain)) {
+      return NextResponse.json(
+        { error: "Domain mismatch" },
+        { headers: corsHeaders }
+      );
     }
 
     if (event === "pageview") {
-      await supabase
+      const { error } = await supabase
         .from("page_views")
-        .insert([{ domain, page: url }]);
+        .insert([{ 
+          domain, 
+          page: url,
+          city: city || 'Unknown',
+          region: region || 'Unknown',
+          country: country || 'Unknown',
+          operating_system: operatingSystem || 'Unknown'
+        }]);
+
+      if (error) throw error;
     }
 
-    return NextResponse.json({ success: true, data }, { headers: corsHeaders });
+    if (event === "session_start") {
+      const { error } = await supabase
+        .from("visits")
+        .insert([{ 
+          website_id: domain, 
+          source: source || "Direct",
+          city: city || 'Unknown',
+          region: region || 'Unknown',
+          country: country || 'Unknown',
+          operating_system: operatingSystem || 'Unknown'
+        }]);
+
+      if (error) throw error;
+    }
+
+    return NextResponse.json(
+      { success: true, data }, 
+      { headers: corsHeaders }
+    );
   } catch (error) {
     console.error('Error processing tracking request:', error);
     return NextResponse.json(

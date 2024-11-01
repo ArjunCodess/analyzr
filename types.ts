@@ -70,8 +70,14 @@ export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }> ? Exclude<U
 export type CountResult = { count: number | null };
 
 export interface PageView {
+  id: string;
+  domain: string;
   page: string;
   created_at: string;
+  city?: string;
+  region?: string;
+  country?: string;
+  operating_system?: string;
 }
 
 export interface Visit {
@@ -136,4 +142,16 @@ export interface SessionDurationStats {
   averageDuration: string;
   shortestSession: string;
   longestSession: string;
+}
+
+export interface GroupedLocation {
+  city: string;
+  region: string;
+  country: string;
+  visits: number;
+}
+
+export interface GroupedOS {
+  operating_system: string;
+  visits: number;
 }

@@ -26,7 +26,7 @@ export async function fetchViews(
   try {
     let viewsQuery = supabase
       .from("page_views")
-      .select()
+      .select('*, city, region, country, operating_system')
       .eq("domain", website);
 
     let visitsQuery = supabase
