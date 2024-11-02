@@ -2,15 +2,19 @@ import { supabase } from "@/config/supabase";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
+import { getCorsHeaders } from '@/lib/cors';
 
-export const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
+export async function GET() {
+  const { data } = await supabase.from("events").select();
+  return new Response(JSON.stringify(data), {
+    headers: getCorsHeaders(),
+  });
+}
 
 export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+  return new Response(null, {
+    headers: getCorsHeaders(),
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -26,14 +30,14 @@ export async function POST(req: NextRequest) {
       if (!data)
         return NextResponse.json(
           { error: "Unauthorized - Invalid API" },
-          { status: 403, headers: corsHeaders }
+          { status: 403, headers: getCorsHeaders() }
         );
 
       if (data.length > 0) {
         if (name.trim() === "" || domain.trim() === "")
           return NextResponse.json(
             { error: "Name or Domain Fields Must NOT Be Empty." },
-            { status: 400, headers: corsHeaders }
+            { status: 400, headers: getCorsHeaders() }
           );
         else {
           const { error } = await supabase.from("events").insert([
@@ -47,12 +51,12 @@ export async function POST(req: NextRequest) {
           if (error)
             return NextResponse.json(
               { error: error },
-              { status: 400, headers: corsHeaders }
+              { status: 400, headers: getCorsHeaders() }
             );
           else
             return NextResponse.json(
               { message: "success" },
-              { status: 200, headers: corsHeaders }
+              { status: 200, headers: getCorsHeaders() }
             );
         }
       }
@@ -60,7 +64,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { error: "Unauthorized - Invalid API" },
-      { status: 401, headers: corsHeaders }
+      { status: 401, headers: getCorsHeaders() }
     );
   } catch (error) {
     const errorMessage =
@@ -68,7 +72,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { error: errorMessage },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders() }
     );
   }
 }

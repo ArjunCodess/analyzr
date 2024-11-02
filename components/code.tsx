@@ -10,10 +10,11 @@ export default function Code({ language }: { language: string }) {
   
   const javascriptCode = `const axios = require('axios');
   
+const API_KEY = "YOUR_API_KEY";
 const url = "https://getanalyzr.vercel.app/api/events";
 const headers = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer {{apiKey}}"
+    "Authorization": \`Bearer \${API_KEY}\`
 };
   
 const eventData = {
@@ -35,10 +36,11 @@ sendRequest();`;
 
   const pythonCode = `import requests
   
+API_KEY = "YOUR_API_KEY"
 url = "https://getanalyzr.vercel.app/api/events"
 headers = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer {{apiKey}}"
+    "Authorization": f"Bearer {API_KEY}"
 }
   
 event_data = {
