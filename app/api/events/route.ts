@@ -47,41 +47,67 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      try {
-        const discord = new DiscordClient(process.env.DISCORD_BOT_TOKEN);
-        const dmChannel = await discord.createDM(userData.discord_id!);
-        
-        await discord.sendEmbed(dmChannel.id, {
-          title: `🔔 New Event: ${name}`,
-          description: description || `New event recorded from ${domain}`,
-          color: 0x0099ff,
-          timestamp: new Date().toISOString(),
-          fields: [
-            {
-              name: 'Website',
-              value: domain,
-              inline: true
-            },
-            {
-              name: 'Event',
-              value: name,
-              inline: true
-            }
-          ]
-        });
+      const { error: eventError } = await supabase.from("events").insert([
+        {
+          event_name: name.toLowerCase(),
+          website_id: domain,
+          message: description,
+        },
+      ]);
 
+      if (eventError) {
         return NextResponse.json(
-          { message: "success" },
-          { status: 200, headers: getCorsHeaders() }
-        );
-      } catch (discordError) {
-        console.error('Discord delivery failed:', discordError);
-
-        return NextResponse.json(
-          { error: "Event recorded but Discord notification failed" },
-          { status: 200, headers: getCorsHeaders() }
+          { error: eventError },
+          { status: 400, headers: getCorsHeaders() }
         );
       }
+
+      if (userData.discord_id) {
+        try {
+          const discord = new DiscordClient(process.env.DISCORD_BOT_TOKEN);
+          const dmChannel = await discord.createDM(userData.discord_id);
+          
+          await discord.sendEmbed(dmChannel.id, {
+            title: `🔔 New Event: ${name}`,
+            description: description || `New event recorded from ${domain}`,
+            color: 0x0099ff,
+            timestamp: new Date().toISOString(),
+            fields: [
+              {
+                name: "Website",
+                value: domain,
+                inline: true,
+              },
+              {
+                name: "Event", 
+                value: name,
+                inline: true,
+              },
+              {
+                name: "User",
+                value: `ID: ${userData.user_id}`,
+                inline: false,
+              }
+            ],
+          });
+
+          return NextResponse.json(
+            { message: "success with discord notification" },
+            { status: 200, headers: getCorsHeaders() }
+          );
+        } catch (discordError) {
+          console.error('Discord delivery failed:', discordError);
+          return NextResponse.json(
+            { message: "Event recorded but Discord notification failed" },
+            { status: 200, headers: getCorsHeaders() }
+          );
+        }
+      }
+
+      return NextResponse.json(
+        { message: "success without discord notification" },
+        { status: 200, headers: getCorsHeaders() }
+      );
     }
 
     return NextResponse.json(
