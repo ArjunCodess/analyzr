@@ -183,3 +183,11 @@ export interface UserData {
   api: string;
   user_id: string;
 }
+
+export interface CustomEvent {
+  id: string;
+  event_name: string;
+  message: string;
+  created_at: string;
+  website_id: string;
+}

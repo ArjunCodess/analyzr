@@ -35,30 +35,37 @@ export async function fetchViews(
       .eq("website_id", website);
 
     if (filter_duration && filter_duration !== "0") {
-      viewsQuery = viewsQuery.filter(
+      viewsQuery = viewsQuery.gte(
         "created_at",
-        "gte",
         ThatTimeAgo.toISOString()
       );
-      visitsQuery = visitsQuery.filter(
+      visitsQuery = visitsQuery.gte(
         "created_at",
-        "gte",
         ThatTimeAgo.toISOString()
       );
     }
 
-    const [viewsResponse, visitsResponse] = await Promise.all([
-      viewsQuery,
-      visitsQuery,
+    const customEventsQuery = supabase
+      .from("events")
+      .select()
+      .eq("website_id", website)
+      .order('created_at', { ascending: false })
+      .returns<CustomEvent[]>();
+
+    const [viewsResponse, visitsResponse, customEventsResponse] = await Promise.all([
+      viewsQuery.returns<PageView[]>(),
+      visitsQuery.returns<Visit[]>(),
+      customEventsQuery
     ]);
 
     if (viewsResponse.error) throw new Error(viewsResponse.error.message);
     if (visitsResponse.error) throw new Error(visitsResponse.error.message);
+    if (customEventsResponse.error) throw new Error(customEventsResponse.error.message);
 
     return {
-      pageViews: viewsResponse.data as unknown as PageView[],
-      visits: visitsResponse.data as unknown as Visit[],
-      customEvents: [],
+      pageViews: viewsResponse.data || [],
+      visits: visitsResponse.data || [],
+      customEvents: customEventsResponse.data || [],
     };
   } catch (error) {
     console.error("Error fetching views:", error);

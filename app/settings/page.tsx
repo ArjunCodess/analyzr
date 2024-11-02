@@ -25,12 +25,6 @@ export default function SettingsPage() {
   const { user } = useUser()
   const { toast } = useToast()
 
-  useEffect(() => {
-    console.log("Current user:", user)
-    console.log("Current apiKey:", apiKey)
-    console.log("Loading state:", loading)
-  }, [user, apiKey, loading])
-
   const generateApiKey = async () => {
     setLoading(true)
     if (loading || !user) return
@@ -39,13 +33,12 @@ export default function SettingsPage() {
       Math.random().toString(36).substring(2, 300) +
       Math.random().toString(36).substring(2, 300)
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("users")
       .insert([{ api: randomString, user_id: user.id }])
       .select()
       .returns<UserData[]>()
 
-    if (error) console.log(error)
     if (data && data[0]) setApiKey(data[0].api)
     setLoading(false)
   }
@@ -75,7 +68,7 @@ export default function SettingsPage() {
       if (userData[0].api) {
         setApiKey(userData[0].api)
       } else {
-        console.log("No API key found in user data:", userData[0])
+        console.error("No API key found in user data:", userData[0])
       }
     }
     setLoading(false)

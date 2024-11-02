@@ -46,7 +46,27 @@ export function groupPageSources(visits: Visit[]): GroupedSource[] {
 }
 
 export function formatTimeStamp(date: string): string {
-  return new Date(date).toLocaleString();
+  const timestamp = new Date(date);
+  
+  // Array of month names
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  
+  // Get the day with ordinal suffix (1st, 2nd, 3rd, etc.)
+  const day = timestamp.getDate();
+  const ordinal = (day: number): string => {
+    if (day > 3 && day < 21) return `${day}th`;
+    switch (day % 10) {
+      case 1: return `${day}st`;
+      case 2: return `${day}nd`;
+      case 3: return `${day}rd`;
+      default: return `${day}th`;
+    }
+  };
+
+  return `${months[timestamp.getMonth()]} ${ordinal(day)}, ${timestamp.getFullYear()}`;
 }
 
 export function groupByLocation(pageViews: PageView[]): GroupedLocation[] {

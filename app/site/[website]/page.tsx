@@ -56,15 +56,15 @@ export default function AnalyticsPage() {
         return;
       }
       
-      setPageViews(result.pageViews);
-      setTotalVisits(result.visits);
-      setCustomEvents(result.customEvents);
-      setGroupedPageViews(groupPageViews(result.pageViews));
-      setGroupedPageSources(groupPageSources(result.visits));
+      setPageViews(result.pageViews || []);
+      setTotalVisits(result.visits || []);
+      setCustomEvents(result.customEvents || []);
+      setGroupedPageViews(groupPageViews(result.pageViews || []));
+      setGroupedPageSources(groupPageSources(result.visits || []));
       
-      const newGroupedEvents = result.customEvents.reduce<Record<string, number>>(
+      const newGroupedEvents = (result.customEvents || []).reduce<Record<string, number>>(
         (acc, event) => {
-          if (event.event_name) {
+          if (event?.event_name) {
             acc[event.event_name] = (acc[event.event_name] || 0) + 1;
           }
           return acc;
@@ -94,9 +94,7 @@ export default function AnalyticsPage() {
 
   if (loading) return <Loading text="Getting your data..." />;
 
-  if (pageViews?.length === 0 && !loading) {
-    return <NoPageViewsState />;
-  }
+  if (pageViews?.length === 0 && !loading) return <NoPageViewsState />;
 
   return (
     <div className="min-h-screen px-4 py-12">
@@ -106,7 +104,7 @@ export default function AnalyticsPage() {
             <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white flex flex-row">
               Analytics for {website}
               <Link href={`https://${website}`} target="_blank">
-                <ArrowUpRightIcon className="md:w-10 md:h-10" />
+                <ArrowUpRightIcon className="w-6 h-6 md:w-9 md:h-9 md:-mt-1" />
               </Link>
             </h1>
             <p className="text-sm text-neutral-100">

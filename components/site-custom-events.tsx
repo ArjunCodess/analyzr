@@ -1,114 +1,141 @@
-"use client";
+"use client"
 
-import { CustomEvent } from "@/types";
-import { formatTimeStamp } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { CustomEvent } from "@/types"
+import { formatTimeStamp } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "@/components/ui/carousel"
+import { Badge } from "@/components/ui/badge"
 
 interface SiteCustomEventsProps {
-  customEvents: CustomEvent[];
-  groupedCustomEvents: Record<string, number>;
-  activeCustomEventTab: string;
-  setActiveCustomEventTab: (tab: string) => void;
+  customEvents: CustomEvent[]
+  groupedCustomEvents: Record<string, number>
+  activeCustomEventTab: string
+  setActiveCustomEventTab: (tab: string) => void
 }
 
 export default function SiteCustomEvents({
-  customEvents,
-  groupedCustomEvents,
-  activeCustomEventTab,
+  customEvents = [],
+  groupedCustomEvents = {},
+  activeCustomEventTab = "",
   setActiveCustomEventTab,
 }: SiteCustomEventsProps) {
-  if (Object.keys(groupedCustomEvents).length === 0) {
+  if (!customEvents || !Array.isArray(customEvents)) {
+    return null
+  }
+
+  if (!groupedCustomEvents || Object.keys(groupedCustomEvents).length === 0) {
     return (
-      <Card className="border-neutral-800 bg-neutral-900/20 backdrop-blur-sm">
-        <CardContent className="p-6 text-center">
-          <p className="text-neutral-100">No custom events recorded yet</p>
+      <Card className="border-neutral-800 bg-[#0a0a0a] shadow-lg">
+        <CardContent className="p-12 text-center">
+          <p className="text-neutral-100 text-lg font-semibold">No custom events recorded yet</p>
+          <p className="text-neutral-400 mt-2">Custom events will appear here once they are tracked</p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
-    <>
-      <Carousel className="w-full">
-        <CarouselContent>
-          {Object.entries(groupedCustomEvents).map(([eventName, count]) => (
-            <CarouselItem
-              key={eventName}
-              className="md:basis-1/2 lg:basis-1/3"
-            >
-              <Card
-                className={`cursor-pointer border-neutral-800 bg-neutral-950/20 backdrop-blur-sm transition-all hover:bg-neutral-900 hover:shadow-lg ${
-                  activeCustomEventTab === eventName
-                    ? "border-neutral-600 shadow-lg"
-                    : ""
-                }`}
-                onClick={() => setActiveCustomEventTab(eventName)}
-              >
-                <CardHeader>
-                  <CardTitle className="text-neutral-300 text-sm md:text-base">
-                    {eventName}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm md:text-base lg:text-lg font-bold tracking-tight text-white">
-                    {count}
-                  </p>
-                </CardContent>
-              </Card>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="border-neutral-800 bg-neutral-950/20 text-white hover:bg-neutral-900" />
-        <CarouselNext className="border-neutral-800 bg-neutral-900/20 text-white hover:bg-neutral-900" />
-      </Carousel>
+    <div className="space-y-6">
+      <Card className="border-neutral-800 bg-[#0a0a0a] shadow-lg overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between pb-4">
+      <CardTitle className="text-xl font-bold text-neutral-100">Custom Events Overview</CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 pb-1">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {Object.entries(groupedCustomEvents).map(([eventName, count]) => (
+                <CarouselItem key={eventName} className="md:basis-1/2 lg:basis-1/3">
+                  <div className="p-1">
+                    <Card
+                      className={`cursor-pointer border-neutral-800 bg-neutral-900 transition-all duration-300 hover:bg-neutral-700 ${
+                        activeCustomEventTab === eventName
+                          ? "ring-2 ring-neutral-400 shadow-lg"
+                          : ""
+                      }`}
+                      onClick={() => setActiveCustomEventTab(eventName)}
+                    >
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-neutral-200 text-sm md:text-base truncate">
+                          {eventName}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-neutral-100">
+                          {count}
+                        </p>
+                        <p className="text-xs text-neutral-400 mt-1">Total Events</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex items-center justify-end gap-2 p-1 mt-8">
+              <CarouselPrevious className="static bg-neutral-800 hover:bg-neutral-700 text-neutral-100 hover:text-neutral-100" />
+              <CarouselNext className="static bg-neutral-800 hover:bg-neutral-700 text-neutral-100 hover:text-neutral-100" />
+            </div>
+          </Carousel>
+        </CardContent>
+      </Card>
 
-      <Card className="mt-8 border-neutral-800 bg-neutral-900/20 backdrop-blur-sm">
+      <Card className="border-neutral-800 bg-[#0a0a0a] shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-neutral-300 text-sm md:text-base">Event Details</CardTitle>
+          <CardTitle className="text-xl font-bold text-neutral-100">Event Details</CardTitle>
           {activeCustomEventTab && (
             <Button
               onClick={() => setActiveCustomEventTab("")}
               variant="outline"
-              className="border-neutral-800 bg-neutral-900 text-neutral-100 hover:bg-neutral-800 hover:text-white"
+              size="sm"
+              className="border-neutral-700 bg-neutral-800 text-neutral-100 hover:bg-neutral-700 hover:text-neutral-50 transition-all duration-200"
             >
               Show All
             </Button>
           )}
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[400px]">
+          <ScrollArea className="h-[500px]">
             {customEvents
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
               .filter((event) =>
                 activeCustomEventTab
                   ? event.event_name === activeCustomEventTab
                   : true
               )
               .map((event) => (
-                <div
+                <Card
                   key={event.id}
-                  className="border my-2 border-neutral-800 py-4 transition-colors hover:bg-neutral-900/20"
+                  className="mb-4 border-neutral-800 bg-neutral-900 transition-all duration-200 hover:bg-neutral-750"
                 >
-                  <p className="mb-2 text-xs md:text-sm font-medium text-neutral-100">
-                    {event.event_name}
-                  </p>
-                  <p className="text-xs md:text-sm text-neutral-100">{event.message}</p>
-                  <p className="mt-2 text-xs text-neutral-500">
-                    {formatTimeStamp(event.timestamp)}
-                  </p>
-                </div>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <Badge variant="outline" className="bg-neutral-700 text-neutral-200 border-neutral-600">
+                        {event.event_name}
+                      </Badge>
+                      <p className="text-xs text-neutral-400">
+                        {formatTimeStamp(event.created_at)}
+                      </p>
+                    </div>
+                    <p className="text-sm text-neutral-300 mt-2">{event.message}</p>
+                  </CardContent>
+                </Card>
               ))}
           </ScrollArea>
         </CardContent>
       </Card>
-    </>
-  );
+    </div>
+  )
 }
