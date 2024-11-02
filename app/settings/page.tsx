@@ -105,7 +105,7 @@ export default function SettingsPage() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to update Discord ID. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to update Discord ID. Please try again.",
         variant: "destructive",
         duration: 5000,
       })
@@ -151,7 +151,7 @@ export default function SettingsPage() {
                     </Button>
                   </div>
                   <p className="text-xs text-neutral-400 mt-1">
-                    To find your Discord User ID, enable Developer Mode in Discord settings, then right-click your profile and click "Copy ID"
+                    To find your Discord User ID, enable Developer Mode in Discord settings, then right-click your profile and click &quot;Copy ID&quot;
                   </p>
                 </div>
               </div>
