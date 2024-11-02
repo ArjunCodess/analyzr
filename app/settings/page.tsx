@@ -21,6 +21,7 @@ import Code from "@/components/code"
 
 export default function SettingsPage() {
   const [apiKey, setApiKey] = useState<string>("")
+  const [discordId, setDiscordId] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(true)
   const { user } = useUser()
   const { toast } = useToast()
@@ -43,7 +44,7 @@ export default function SettingsPage() {
     setLoading(false)
   }
 
-  const getUserAPIs = useCallback(async () => {
+  const getUserData = useCallback(async () => {
     if (!user) return
 
     setLoading(true)
@@ -55,7 +56,7 @@ export default function SettingsPage() {
 
     if (userError) {
       toast({
-        title: "Error fetching API key",
+        title: "Error fetching user data",
         description: userError.message,
         variant: "destructive",
         duration: 5000,
@@ -65,19 +66,16 @@ export default function SettingsPage() {
     }
 
     if (userData && userData.length > 0) {
-      if (userData[0].api) {
-        setApiKey(userData[0].api)
-      } else {
-        console.error("No API key found in user data:", userData[0])
-      }
+      setApiKey(userData[0].api || "")
+      setDiscordId(userData[0].discord_id || "")
     }
     setLoading(false)
   }, [user, toast])
 
   useEffect(() => {
     if (!supabase || !user) return
-    getUserAPIs()
-  }, [user, getUserAPIs])
+    getUserData()
+  }, [user, getUserData])
 
   const copyApiKey = () => {
     navigator.clipboard.writeText(apiKey)
@@ -86,6 +84,32 @@ export default function SettingsPage() {
       description: "Your API key has been copied to the clipboard.",
       duration: 3000,
     })
+  }
+
+  const updateDiscordId = async () => {
+    if (!user) return
+
+    try {
+      const { error } = await supabase
+        .from("users")
+        .update({ discord_id: discordId })
+        .eq("user_id", user.id)
+
+      if (error) throw error
+
+      toast({
+        title: "Discord ID Updated",
+        description: "Your Discord ID has been successfully updated.",
+        duration: 3000,
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update Discord ID. Please try again.",
+        variant: "destructive",
+        duration: 5000,
+      })
+    }
   }
 
   if (!user) return <Loading text="Redirecting..." />
@@ -97,6 +121,44 @@ export default function SettingsPage() {
       <div className="container mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-white mb-8">API Settings</h1>
         <div className="space-y-8">
+          {/* Discord ID Card */}
+          <Card className="border-neutral-800 bg-neutral-900 shadow-2xl">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-neutral-100">Discord Integration</CardTitle>
+              <CardDescription className="text-neutral-400">
+                Connect your Discord account to receive event notifications
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-neutral-300">
+                    Discord User ID:
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      value={discordId}
+                      onChange={(e) => setDiscordId(e.target.value)}
+                      placeholder="Enter your Discord User ID"
+                      className="bg-neutral-800 text-neutral-200 border-neutral-700 focus:border-neutral-600"
+                    />
+                    <Button
+                      onClick={updateDiscordId}
+                      className="bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700"
+                    >
+                      Save
+                    </Button>
+                  </div>
+                  <p className="text-xs text-neutral-400 mt-1">
+                    To find your Discord User ID, enable Developer Mode in Discord settings, then right-click your profile and click "Copy ID"
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* API Key Card */}
           <Card className="border-neutral-800 bg-neutral-900 shadow-2xl">
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-neutral-100">API Key Management</CardTitle>
@@ -144,6 +206,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
+          {/* Usage Instructions Card */}
           <Card className="border-neutral-800 bg-neutral-900 shadow-2xl">
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-neutral-100">Usage Instructions</CardTitle>

@@ -161,7 +161,6 @@ export interface GroupedOS {
 export interface User {
   id: string;
   email?: string;
-  // add other user properties as needed
 }
 
 export interface ApiKeyResponse {
@@ -182,6 +181,7 @@ export interface CodeCompProps {
 export interface UserData {
   api: string;
   user_id: string;
+  discord_id?: string;
 }
 
 export interface CustomEvent {

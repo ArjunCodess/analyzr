@@ -3,6 +3,8 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { getCorsHeaders } from '@/lib/cors';
+import { DiscordClient } from '@/lib/discord-client';
+import { UserData } from "@/types";
 
 export async function GET() {
   const { data } = await supabase.from("events").select();
@@ -25,40 +27,60 @@ export async function POST(req: NextRequest) {
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const apiKey = authHeader.split("Bearer ")[1];
-      const { data } = await supabase.from("users").select().eq("api", apiKey);
+      const { data: userData } = await supabase
+        .from("users")
+        .select("*")
+        .eq("api", apiKey)
+        .single<UserData>();
 
-      if (!data)
+      if (!userData) {
         return NextResponse.json(
           { error: "Unauthorized - Invalid API" },
           { status: 403, headers: getCorsHeaders() }
         );
+      }
 
-      if (data.length > 0) {
-        if (name.trim() === "" || domain.trim() === "")
-          return NextResponse.json(
-            { error: "Name or Domain Fields Must NOT Be Empty." },
-            { status: 400, headers: getCorsHeaders() }
-          );
-        else {
-          const { error } = await supabase.from("events").insert([
+      if (name.trim() === "" || domain.trim() === "") {
+        return NextResponse.json(
+          { error: "Name or Domain Fields Must NOT Be Empty." },
+          { status: 400, headers: getCorsHeaders() }
+        );
+      }
+
+      try {
+        const discord = new DiscordClient(process.env.DISCORD_BOT_TOKEN);
+        const dmChannel = await discord.createDM(userData.discord_id!);
+        
+        await discord.sendEmbed(dmChannel.id, {
+          title: `🔔 New Event: ${name}`,
+          description: description || `New event recorded from ${domain}`,
+          color: 0x0099ff,
+          timestamp: new Date().toISOString(),
+          fields: [
             {
-              event_name: name.toLowerCase(),
-              website_id: domain,
-              message: description,
+              name: 'Website',
+              value: domain,
+              inline: true
             },
-          ]);
+            {
+              name: 'Event',
+              value: name,
+              inline: true
+            }
+          ]
+        });
 
-          if (error)
-            return NextResponse.json(
-              { error: error },
-              { status: 400, headers: getCorsHeaders() }
-            );
-          else
-            return NextResponse.json(
-              { message: "success" },
-              { status: 200, headers: getCorsHeaders() }
-            );
-        }
+        return NextResponse.json(
+          { message: "success" },
+          { status: 200, headers: getCorsHeaders() }
+        );
+      } catch (discordError) {
+        console.error('Discord delivery failed:', discordError);
+
+        return NextResponse.json(
+          { error: "Event recorded but Discord notification failed" },
+          { status: 200, headers: getCorsHeaders() }
+        );
       }
     }
 
@@ -67,9 +89,7 @@ export async function POST(req: NextRequest) {
       { status: 401, headers: getCorsHeaders() }
     );
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error occurred";
-
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json(
       { error: errorMessage },
       { status: 500, headers: getCorsHeaders() }
