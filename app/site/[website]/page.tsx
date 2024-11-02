@@ -84,12 +84,6 @@ export default function AnalyticsPage() {
     if (!website) return;
     
     handleFilterChange("0");
-    
-    const interval = setInterval(() => {
-      handleFilterChange("0");
-    }, 30000);
-    
-    return () => clearInterval(interval);
   }, [website, handleFilterChange]);
 
   if (loading) return <Loading text="Getting your data..." />;
@@ -130,7 +124,7 @@ export default function AnalyticsPage() {
               </SelectContent>
             </Select>
             <Button
-              onClick={() => handleFilterChange("0")}
+              onClick={() => handleFilterChange(filterValue)}
               variant="outline"
               size="icon"
               className="border-neutral-800 bg-neutral-900/20 text-neutral-100 backdrop-blur-sm hover:bg-neutral-900/80 hover:text-white"

@@ -12,6 +12,7 @@ import {
   Smartphone,
   Laptop,
   Tablet,
+  MapPin,
 } from "lucide-react";
 import { PageView, Visit, GroupedView, GroupedSource } from "@/types";
 import AnalyticsChart from "@/components/analytics-chart";
@@ -329,7 +330,7 @@ export default function GeneralAnalytics({
           <CardHeader className="py-0 pt-4 pb-2">
             <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between">
               <p>Visitor Locations</p>
-              <Globe className="w-6 h-6" />
+              <MapPin className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 relative">
