@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/config/supabase";
-import { Trash2, Download, BarChart2, Activity } from "lucide-react";
+import { Trash2, Download, BarChart2, Activity, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import Snippet from "@/components/snippet";
 
 interface SiteSettingsProps {
   website: string;
@@ -122,7 +123,24 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-[95vw] mx-auto">
+      {/* Installation Section */}
+      <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm overflow-hidden">
+        <CardHeader>
+          <CardTitle className="text-neutral-300 text-sm md:text-base lg:text-lg flex items-center gap-2">
+            <Code className="h-4 w-4 md:h-5 md:w-5" />
+            <span>Installation</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0 sm:p-6">
+          <div className="w-full overflow-x-auto">
+            <div className="min-w-[300px]">
+              <Snippet />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Download Section */}
       <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
         <CardHeader>
@@ -131,7 +149,7 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
             <span>Export Data</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           <div className="space-y-4">
             <div className="rounded-lg border border-neutral-800 bg-neutral-900/60 p-4">
               <div className="flex items-center justify-between">
@@ -190,7 +208,7 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
             <span>Danger Zone</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           <div className="rounded-lg border border-red-900/10 bg-red-900/20 p-4">
             <div className="flex items-center justify-between">
               <div className="space-y-1">

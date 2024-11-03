@@ -10,10 +10,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/config/supabase";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import Snippet from "./snippet";
 
 export default function AddWebsite() {
   const [website, setWebsite] = useState("");
@@ -78,7 +78,7 @@ export default function AddWebsite() {
   }, [website]);
 
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-transparent border-0 text-neutral-50">
+    <Card className="bg-transparent border-0 text-neutral-50 overflow-hidden">
       <CardHeader>
         <CardTitle>Add Website</CardTitle>
         <CardDescription className="text-neutral-300">
@@ -108,7 +108,7 @@ export default function AddWebsite() {
             </div>
             {!error && (
               <Button
-              variant="secondary"
+                variant="secondary"
                 onClick={checkDomainAddedBefore}
                 disabled={loading || !website.trim()}
               >
@@ -118,21 +118,11 @@ export default function AddWebsite() {
           </div>
         ) : (
           <div className="space-y-8">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Installation Script</label>
-              <Textarea
-                readOnly
-                className="font-mono text-sm text-black"
-                value={`<script defer data-domain="${website}"
-src="https://getanalyzr.vercel.app/tracking-script.js"></script>`}
-              />
-              <p className="text-sm text-muted-foreground">
-                Paste this snippet in the{" "}
-                <span className="text-white font-semibold">{"<head>"}</span>{" "}
-                of your website.
-              </p>
-            </div>
-            <Button onClick={() => router.push(`/site/${website.trim()}`)} variant="secondary">
+            <Snippet />
+            <Button
+              onClick={() => router.push(`/site/${website.trim()}`)}
+              variant="secondary"
+            >
               Continue to See Analytics
             </Button>
           </div>

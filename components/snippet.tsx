@@ -3,8 +3,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams } from "next/navigation";
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code, Copy } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Copy } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -37,18 +37,22 @@ export default function Snippet() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Code className="h-5 w-5" />
-          Installation
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Card className="border-neutral-800 bg-neutral-900/40">
+      <CardContent className="pt-6">
         <Tabs defaultValue="JavaScript/React.js" className="w-full">
-          <TabsList className="w-full grid grid-cols-2 bg-neutral-800">
-            <TabsTrigger value="JavaScript/React.js">JavaScript / React.js</TabsTrigger>
-            <TabsTrigger value="Next.js">Next.js</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-2 bg-neutral-800/50">
+            <TabsTrigger 
+              value="JavaScript/React.js"
+              className="data-[state=active]:bg-neutral-700 data-[state=active]:text-neutral-100 text-neutral-400"
+            >
+              JavaScript / React.js
+            </TabsTrigger>
+            <TabsTrigger 
+              value="Next.js"
+              className="data-[state=active]:bg-neutral-700 data-[state=active]:text-neutral-100 text-neutral-400"
+            >
+              Next.js
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="JavaScript/React.js" className="mt-4">
             <div className="rounded-lg bg-neutral-950 border border-neutral-800 p-4">
@@ -60,7 +64,7 @@ export default function Snippet() {
                   onClick={() => copySnippet(react_snippet)}
                   variant="ghost"
                   size="sm"
-                  className="text-neutral-400 hover:text-neutral-100"
+                  className="text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   Copy
@@ -89,7 +93,7 @@ export default function Snippet() {
                   onClick={() => copySnippet(next_snippet)}
                   variant="ghost"
                   size="sm"
-                  className="text-neutral-400 hover:text-neutral-100"
+                  className="text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   Copy

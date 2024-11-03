@@ -88,7 +88,7 @@ export default function AnalyticsPage() {
 
   if (loading) return <Loading text="Getting your data..." />;
 
-  if (pageViews?.length === 0 && !loading) return <NoPageViewsState />;
+  if (pageViews?.length === 0 && !loading) return <NoPageViewsState website={website as string} />;
 
   return (
     <div className="min-h-screen px-4 py-12">

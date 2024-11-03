@@ -25,6 +25,8 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState<boolean>(true)
   const { user } = useUser()
   const { toast } = useToast()
+  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [tempDiscordId, setTempDiscordId] = useState<string>("")
 
   const generateApiKey = async () => {
     setLoading(true)
@@ -92,11 +94,14 @@ export default function SettingsPage() {
     try {
       const { error } = await supabase
         .from("users")
-        .update({ discord_id: discordId })
+        .update({ discord_id: tempDiscordId })
         .eq("user_id", user.id)
 
       if (error) throw error
 
+      setDiscordId(tempDiscordId)
+      setIsEditing(false)
+      
       toast({
         title: "Discord ID Updated",
         description: "Your Discord ID has been successfully updated.",
@@ -110,6 +115,16 @@ export default function SettingsPage() {
         duration: 5000,
       })
     }
+  }
+
+  const handleEditClick = () => {
+    setTempDiscordId(discordId)
+    setIsEditing(true)
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    setTempDiscordId(discordId)
   }
 
   if (!user) return <Loading text="Redirecting..." />
@@ -138,17 +153,36 @@ export default function SettingsPage() {
                   <div className="flex gap-2">
                     <Input
                       type="text"
-                      value={discordId}
-                      onChange={(e) => setDiscordId(e.target.value)}
+                      value={isEditing ? tempDiscordId : discordId}
+                      onChange={(e) => setTempDiscordId(e.target.value)}
                       placeholder="Enter your Discord User ID"
                       className="bg-neutral-800 text-neutral-200 border-neutral-700 focus:border-neutral-600"
+                      disabled={!isEditing}
                     />
-                    <Button
-                      onClick={updateDiscordId}
-                      className="bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700"
-                    >
-                      Save
-                    </Button>
+                    {isEditing ? (
+                      <>
+                        <Button
+                          onClick={updateDiscordId}
+                          className="bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700"
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          onClick={handleCancelEdit}
+                          variant="outline"
+                          className="bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 hover:text-white"
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        onClick={handleEditClick}
+                        className="bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700"
+                      >
+                        Edit
+                      </Button>
+                    )}
                   </div>
                   <p className="text-xs text-neutral-400 mt-1">
                     To find your Discord User ID, enable Developer Mode in Discord settings, then right-click your profile and click &quot;Copy ID&quot;

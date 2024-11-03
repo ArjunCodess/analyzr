@@ -52,7 +52,7 @@ export default function DashboardPage() {
                 <Plus className="mr-2 h-4 w-4" /> Add Website
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-neutral-900 p-4">
+            <DialogContent className="bg-neutral-900 p-4 max-w-3xl">
               <DialogTitle className="sr-only">Add Website</DialogTitle>
               <AddWebsite />
             </DialogContent>
