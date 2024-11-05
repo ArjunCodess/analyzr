@@ -126,7 +126,7 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
     <div className="space-y-6 w-full max-w-[95vw] mx-auto">
       {/* Installation Section */}
       <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm overflow-hidden">
-        <CardHeader>
+        <CardHeader className="pb-0">
           <CardTitle className="text-neutral-300 text-sm md:text-base lg:text-lg flex items-center gap-2">
             <Code className="h-4 w-4 md:h-5 md:w-5" />
             <span>Installation</span>
@@ -143,7 +143,7 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
 
       {/* Download Section */}
       <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
-        <CardHeader>
+        <CardHeader className="pb-0">
           <CardTitle className="text-neutral-300 text-sm md:text-base lg:text-lg flex items-center gap-2">
             <Download className="h-4 w-4 md:h-5 md:w-5" />
             <span>Export Data</span>
@@ -202,7 +202,7 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
 
       {/* Danger Zone Section */}
       <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
-        <CardHeader>
+        <CardHeader className="pb-0">
           <CardTitle className="text-neutral-300 text-sm md:text-base lg:text-lg flex items-center gap-2">
             <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
             <span>Danger Zone</span>

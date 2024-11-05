@@ -64,7 +64,9 @@ export interface Analytics {
 }
 
 export type DbResult<T> = T extends PromiseLike<infer U> ? U : never;
-export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }> ? Exclude<U, null> : never;
+export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }>
+  ? Exclude<U, null>
+  : never;
 export type CountResult = { count: number | null };
 
 export interface PageView {
@@ -83,7 +85,7 @@ export interface PageView {
 
 export interface Visit {
   session_id: string;
-  event: 'session_start' | 'session_end' | 'pageview';
+  event: "session_start" | "session_end" | "pageview";
   created_at: string;
   source: string | null;
 }
@@ -137,7 +139,7 @@ export interface CustomEventsDetailsProps {
 export interface DangerZoneProps {
   isDeleting: boolean;
   onDelete: () => Promise<void>;
-} 
+}
 
 export interface SessionDurationStats {
   averageDuration: string;
