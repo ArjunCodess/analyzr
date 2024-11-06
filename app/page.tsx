@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import { BlurFade } from "@/components/ui/blur-fade";
-import { features } from "@/lib/constants";
+import { FEATURES } from "@/lib/constants";
 import { MockDiscordUI } from "@/components/mock-discord-ui";
 import { AnimatedList } from "@/components/ui/animated-list";
 import { DiscordMessage } from "@/components/discord-message";
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
   return (
     <main className="flex flex-col divide-y divide-neutral-800">
-      <div className="absolute h-screen w-screen bg-[radial-gradient(ellipse_20%_80%_at_50%_-20%,rgba(37,99,235,0.3),rgba(255,255,255,0))]"></div>
+      <div className="absolute h-screen w-screen bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,rgba(37,99,235,0.3),rgba(255,255,255,0))]"></div>
 
       <section className="relative max-w-full mx-auto md:pb-8">
         <div className="max-w-screen-xl mx-auto px-4 pb-14 pt-20 gap-12 text-neutral-600 md:px-8">
@@ -39,7 +39,6 @@ export default function Home() {
                 and make data-driven decisions with our comprehensive analytics platform.
               </p>
             </BlurFade>
-            
 
             <BlurFade delay={0.4}>
               <div className="items-center justify-center gap-x-3 space-y-3 sm:flex sm:space-y-0">
@@ -106,7 +105,7 @@ export default function Home() {
             </div>
             <div className="relative mt-12">
               <ul className="grid gap-8 grid-cols-1 sm:grid-cols-2 max-w-6xl mx-auto">
-                {features.map((item, idx) => (
+                {FEATURES.map((item, idx) => (
                   <BlurFade
                     key={idx}
                     delay={0.8 + idx * 0.1}

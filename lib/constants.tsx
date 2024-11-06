@@ -1,4 +1,4 @@
-export const features = [
+export const FEATURES = [
   {
     icon: (
       <svg
