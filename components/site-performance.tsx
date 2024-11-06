@@ -16,6 +16,7 @@ import {
 } from "@/actions/pageSpeedMetrics";
 import { Loader2, RefreshCw, ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import { DETAILED_METRICS, PERFORMANCE_METRICS } from "@/lib/constants";
+import { getCategory } from "@/lib/utils";
 
 interface SitePerformanceProps {
   websiteId: string;
@@ -120,7 +121,7 @@ const SummaryCard = ({ metrics }: { metrics: PerformanceMetrics }) => {
           <p className="text-sm font-medium text-neutral-400">
             Overall Performance
           </p>
-          <p className="text-3xl tracking-tight font-semibold bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-transparent">
+          <p className="text-3xl tracking-tight font-semibold bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-transparent mt-2">
             {overallScore}
           </p>
         </div>
@@ -140,6 +141,34 @@ const SummaryCard = ({ metrics }: { metrics: PerformanceMetrics }) => {
         {isGood
           ? "Great job! Your website is performing well."
           : "There's room for improvement in your website's performance."}
+      </p>
+      <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-neutral-700 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+    </div>
+  );
+};
+
+const PerformanceCategory = ({ score }: { score: number }) => {
+  const category = getCategory(score);
+
+  return (
+    <div className="group relative rounded-xl bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 p-6 transition-all duration-300 ease-in-out hover:bg-neutral-800/50 hover:border-neutral-700">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-neutral-400">Performance Category</p>
+          <p className={`text-3xl tracking-tight font-bold mt-2 ${category.color}`}>
+            {category.label}
+          </p>
+        </div>
+        <div className={`p-3 rounded-full ${category.bg}`}>
+          {category.isGood ? (
+            <ArrowUpIcon className={`w-6 h-6 ${category.color}`} />
+          ) : (
+            <ArrowDownIcon className={`w-6 h-6 ${category.color}`} />
+          )}
+        </div>
+      </div>
+      <p className="mt-2 text-sm text-neutral-500">
+        Based on overall performance metrics
       </p>
       <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-neutral-700 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
     </div>
@@ -276,6 +305,14 @@ export default function Performance({
               format={item.format}
             />
           ))}
+          <PerformanceCategory
+            score={(
+              metrics.performance +
+              metrics.accessibility +
+              metrics.bestPractices +
+              metrics.seo
+            ) / 4}
+          />
           <SummaryCard metrics={metrics} />
         </div>
 

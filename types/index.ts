@@ -199,7 +199,6 @@ export interface PerformanceMetrics {
   timeToInteractive: number;
   cumulativeLayoutShift: number;
   totalBlockingTime: number;
-  overallCategory: string;
   performance: number;
   accessibility: number;
   bestPractices: number;
@@ -213,7 +212,6 @@ export interface WebsiteMetrics {
   timeToInteractive: number;
   cumulativeLayoutShift: number;
   totalBlockingTime: number;
-  overallCategory: string;
   performance: number;
   accessibility: number;
   bestPractices: number;

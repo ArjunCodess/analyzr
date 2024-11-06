@@ -15,7 +15,6 @@ export async function fetchPageSpeedMetrics(websiteId: string): Promise<Performa
         timeToInteractive,
         cumulativeLayoutShift,
         totalBlockingTime,
-        overallCategory,
         performance,
         accessibility,
         bestPractices,
@@ -38,7 +37,6 @@ export async function fetchPageSpeedMetrics(websiteId: string): Promise<Performa
       timeToInteractive: data.timeToInteractive || 0,
       cumulativeLayoutShift: data.cumulativeLayoutShift || 0,
       totalBlockingTime: data.totalBlockingTime || 0,
-      overallCategory: data.overallCategory || 'AVERAGE',
       performance: data.performance || 0,
       accessibility: data.accessibility || 0,
       bestPractices: data.bestPractices || 0,
@@ -91,6 +89,7 @@ export async function getPageSpeedMetrics(websiteId: string, url: string): Promi
 
     const encodedUrl = encodeURIComponent(url);
     const apiUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodedUrl}&category=performance&category=accessibility&category=best-practices&category=seo&key=${API_KEY}`;
+    console.log(apiUrl)
 
     console.log('Fetching PageSpeed data for:', url);
 
@@ -113,7 +112,6 @@ export async function getPageSpeedMetrics(websiteId: string, url: string): Promi
       timeToInteractive: Math.round(data.lighthouseResult.audits['interactive'].numericValue),
       cumulativeLayoutShift: Math.round(data.lighthouseResult.audits['cumulative-layout-shift'].numericValue * 1000),
       totalBlockingTime: Math.round(data.lighthouseResult.audits['total-blocking-time'].numericValue),
-      overallCategory: data.loadingExperience?.overall_category || 'AVERAGE',
       performance: Math.round(data.lighthouseResult.categories.performance.score * 100),
       accessibility: Math.round(data.lighthouseResult.categories.accessibility.score * 100),
       bestPractices: Math.round(data.lighthouseResult.categories['best-practices'].score * 100),
@@ -130,7 +128,6 @@ export async function getPageSpeedMetrics(websiteId: string, url: string): Promi
         timeToInteractive: metrics.timeToInteractive,
         cumulativeLayoutShift: metrics.cumulativeLayoutShift,
         totalBlockingTime: metrics.totalBlockingTime,
-        overallCategory: metrics.overallCategory,
         performance: metrics.performance,
         accessibility: metrics.accessibility,
         bestPractices: metrics.bestPractices,

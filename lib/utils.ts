@@ -160,3 +160,11 @@ export function groupByBrowser(pageViews: PageView[]) {
 export function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.toLowerCase().slice(1);
 }
+
+export const getCategory = (score: number) => {
+  if (score >= 90) return { label: 'EXCELLENT', color: 'text-green-500', bg: 'bg-green-500/20', isGood: true };
+  if (score >= 80) return { label: 'GOOD', color: 'text-blue-500', bg: 'bg-blue-500/20', isGood: true };
+  if (score >= 70) return { label: 'AVERAGE', color: 'text-yellow-500', bg: 'bg-yellow-500/20', isGood: false };
+  if (score >= 50) return { label: 'POOR', color: 'text-orange-500', bg: 'bg-orange-500/20', isGood: false };
+  return { label: 'CRITICAL', color: 'text-red-500', bg: 'bg-red-500/20', isGood: false };
+};

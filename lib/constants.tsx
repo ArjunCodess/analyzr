@@ -94,6 +94,5 @@ export const DETAILED_METRICS = [
   { label: 'Time to Interactive', key: 'timeToInteractive', format: 'time' },
   { label: 'Total Blocking Time', key: 'totalBlockingTime', format: 'time' },
   { label: 'Cumulative Layout Shift', key: 'cumulativeLayoutShift', format: 'shift' },
-  { label: 'Overall Category', key: 'overallCategory', format: 'text' },
   { label: 'Speed Index', key: 'speedIndex', format: 'time' }
 ];
