@@ -14,7 +14,7 @@ interface WebsiteCardProps {
 export function WebsiteCard({ website }: WebsiteCardProps) {
   return (
     <Link href={`/site/${website.name}`}>
-      <Card className="hover:ring ring-slate-100 group relative overflow-hidden border border-neutral-800/50 bg-gradient-to-br from-neutral-900 via-neutral-900 to-neutral-800 flex flex-col pb-2 transition-all duration-300">
+      <Card className="px-4 hover:ring ring-slate-100 group relative overflow-hidden border border-neutral-800/50 bg-gradient-to-br from-neutral-900 via-neutral-900 to-neutral-800 flex flex-col pb-2 transition-all duration-300">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
         <div className="absolute -inset-px bg-gradient-to-br from-primary/20 via-primary/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />

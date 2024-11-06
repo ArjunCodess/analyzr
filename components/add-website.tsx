@@ -14,6 +14,13 @@ import { supabase } from "@/config/supabase";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import Snippet from "./snippet";
+import { getPageSpeedMetrics } from "@/actions/pageSpeedMetrics";
+
+type Website = {
+  id: string;
+  name: string;
+  user_id: string;
+};
 
 export default function AddWebsite() {
   const [website, setWebsite] = useState("");
@@ -28,12 +35,30 @@ export default function AddWebsite() {
     setLoading(true);
 
     try {
-      const { error } = await supabase
+      const { data, error: insertError } = await supabase
         .from("websites")
         .insert([{ name: website.trim(), user_id: user?.id }])
-        .select();
+        .select()
+        .returns<Website[]>();
 
-      if (error) throw error;
+      if (insertError) throw insertError;
+
+      if (data && data[0]) {
+        try {
+          // Use the server action to get performance metrics
+          const metrics = await getPageSpeedMetrics(
+            data[0].name,
+            `https://${website.trim()}`
+          );
+          
+          if (!metrics) {
+            console.warn('Failed to fetch initial performance metrics');
+          }
+        } catch (metricsError) {
+          console.error('Error fetching performance metrics:', metricsError);
+        }
+      }
+
       setStep(2);
     } catch (err) {
       console.error("Error adding website:", err);
@@ -112,7 +137,7 @@ export default function AddWebsite() {
                 onClick={checkDomainAddedBefore}
                 disabled={loading || !website.trim()}
               >
-                {loading ? "Adding..." : "Add Website"}
+                {loading ? "Adding & Analyzing..." : "Add Website"}
               </Button>
             )}
           </div>

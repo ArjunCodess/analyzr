@@ -192,3 +192,31 @@ export interface CustomEvent {
   created_at: string;
   website_id: string;
 }
+
+export interface PerformanceMetrics {
+  firstContentfulPaint: number;
+  largestContentfulPaint: number;
+  timeToInteractive: number;
+  cumulativeLayoutShift: number;
+  totalBlockingTime: number;
+  overallCategory: string;
+  performance: number;
+  accessibility: number;
+  bestPractices: number;
+  seo: number;
+  speedIndex: number;
+}
+
+export interface WebsiteMetrics {
+  firstContentfulPaint: number;
+  largestContentfulPaint: number;
+  timeToInteractive: number;
+  cumulativeLayoutShift: number;
+  totalBlockingTime: number;
+  overallCategory: string;
+  performance: number;
+  accessibility: number;
+  bestPractices: number;
+  seo: number;
+  speedIndex: number;
+}

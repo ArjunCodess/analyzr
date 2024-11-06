@@ -80,3 +80,20 @@ export const FEATURES = [
     desc: "Monitor application performance, load times, and user experience metrics. Keep your application running at peak efficiency.",
   },
 ];
+
+export const PERFORMANCE_METRICS = [
+  'performance',
+  'accessibility', 
+  'bestPractices',
+  'seo'
+];
+
+export const DETAILED_METRICS = [
+  { label: 'First Contentful Paint', key: 'firstContentfulPaint', format: 'time' },
+  { label: 'Largest Contentful Paint', key: 'largestContentfulPaint', format: 'time' },
+  { label: 'Time to Interactive', key: 'timeToInteractive', format: 'time' },
+  { label: 'Total Blocking Time', key: 'totalBlockingTime', format: 'time' },
+  { label: 'Cumulative Layout Shift', key: 'cumulativeLayoutShift', format: 'shift' },
+  { label: 'Overall Category', key: 'overallCategory', format: 'text' },
+  { label: 'Speed Index', key: 'speedIndex', format: 'time' }
+];

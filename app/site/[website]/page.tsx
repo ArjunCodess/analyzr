@@ -10,10 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  ArrowUpRightIcon,
-  RefreshCcw,
-} from "lucide-react";
+import { ArrowUpRightIcon, RefreshCcw } from "lucide-react";
 import {
   GroupedSource,
   GroupedView,
@@ -25,14 +22,12 @@ import Loading from "@/components/loading";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { fetchViews } from "@/actions/fetchViews";
-import {
-  groupPageViews,
-  groupPageSources,
-} from "@/lib/utils";
+import { groupPageViews, groupPageSources } from "@/lib/utils";
 import SiteSettings from "@/components/site-settings";
 import SiteCustomEvents from "@/components/site-custom-events";
 import NoPageViewsState from "@/components/no-page-views";
-import GeneralAnalytics from "@/components/general-analytics";
+import GeneralAnalytics from "@/components/site-general-analytics";
+import Performance from "@/components/site-performance";
 
 export default function AnalyticsPage() {
   const { website } = useParams();
@@ -42,53 +37,60 @@ export default function AnalyticsPage() {
   const [customEvents, setCustomEvents] = useState<CustomEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [groupedPageViews, setGroupedPageViews] = useState<GroupedView[]>([]);
-  const [groupedPageSources, setGroupedPageSources] = useState<GroupedSource[]>([]);
-  const [groupedCustomEvents, setGroupedCustomEvents] = useState<Record<string, number>>({});
+  const [groupedPageSources, setGroupedPageSources] = useState<GroupedSource[]>(
+    []
+  );
+  const [groupedCustomEvents, setGroupedCustomEvents] = useState<
+    Record<string, number>
+  >({});
   const [activeCustomEventTab, setActiveCustomEventTab] = useState("");
   const [filterValue, setFilterValue] = useState("0");
 
-  const handleFilterChange = useCallback(async (value: string) => {
-    setLoading(true);
-    try {
-      const result = await fetchViews(website as string, value);
-      if (result.error) {
-        console.error(result.error);
-        return;
-      }
-      
-      setPageViews(result.pageViews || []);
-      setTotalVisits(result.visits || []);
-      setCustomEvents(result.customEvents || []);
-      setGroupedPageViews(groupPageViews(result.pageViews || []));
-      setGroupedPageSources(groupPageSources(result.visits || []));
-      
-      const newGroupedEvents = (result.customEvents || []).reduce<Record<string, number>>(
-        (acc, event) => {
+  const handleFilterChange = useCallback(
+    async (value: string) => {
+      setLoading(true);
+      try {
+        const result = await fetchViews(website as string, value);
+        if (result.error) {
+          console.error(result.error);
+          return;
+        }
+
+        setPageViews(result.pageViews || []);
+        setTotalVisits(result.visits || []);
+        setCustomEvents(result.customEvents || []);
+        setGroupedPageViews(groupPageViews(result.pageViews || []));
+        setGroupedPageSources(groupPageSources(result.visits || []));
+
+        const newGroupedEvents = (result.customEvents || []).reduce<
+          Record<string, number>
+        >((acc, event) => {
           if (event?.event_name) {
             acc[event.event_name] = (acc[event.event_name] || 0) + 1;
           }
           return acc;
-        },
-        {}
-      );
-      setGroupedCustomEvents(newGroupedEvents);
-      setFilterValue(value);
-    } catch (error) {
-      console.error("Error updating views:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [website]);
+        }, {});
+        setGroupedCustomEvents(newGroupedEvents);
+        setFilterValue(value);
+      } catch (error) {
+        console.error("Error updating views:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [website]
+  );
 
   useEffect(() => {
     if (!website) return;
-    
+
     handleFilterChange("0");
   }, [website, handleFilterChange]);
 
   if (loading) return <Loading text="Getting your data..." />;
 
-  if (pageViews?.length === 0 && !loading) return <NoPageViewsState website={website as string} />;
+  if (pageViews?.length === 0 && !loading)
+    return <NoPageViewsState website={website as string} />;
 
   return (
     <div className="min-h-screen px-4 py-12">
@@ -106,10 +108,7 @@ export default function AnalyticsPage() {
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <Select
-              value={filterValue}
-              onValueChange={handleFilterChange}
-            >
+            <Select value={filterValue} onValueChange={handleFilterChange}>
               <SelectTrigger className="w-[180px] border-neutral-800 bg-neutral-900/20 text-neutral-100 backdrop-blur-sm hover:bg-neutral-900/80">
                 <SelectValue placeholder="Select timeframe" />
               </SelectTrigger>
@@ -136,22 +135,28 @@ export default function AnalyticsPage() {
         </div>
 
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="mb-8 grid w-full grid-cols-3 bg-neutral-900/30 border border-neutral-900 p-1 backdrop-blur-sm">
+          <TabsList className="mb-2 w-full bg-neutral-900/30 border border-neutral-900 p-1 backdrop-blur-sm">
             <TabsTrigger
               value="general"
-              className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white"
+              className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white w-1/4"
             >
               General
             </TabsTrigger>
             <TabsTrigger
+              value="performance"
+              className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white w-1/4"
+            >
+              Performance
+            </TabsTrigger>
+            <TabsTrigger
               value="custom-events"
-              className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white"
+              className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white w-1/4"
             >
               Events
             </TabsTrigger>
             <TabsTrigger
               value="settings"
-              className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white"
+              className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white w-1/4"
             >
               Settings
             </TabsTrigger>
@@ -165,6 +170,13 @@ export default function AnalyticsPage() {
               groupedPageSources={groupedPageSources}
               filterValue={filterValue}
               website={website as string}
+            />
+          </TabsContent>
+
+          <TabsContent value="performance">
+            <Performance 
+              websiteId={website as string} 
+              websiteUrl={`https://${website}`}
             />
           </TabsContent>
 
