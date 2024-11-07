@@ -122,7 +122,7 @@ export default function SiteCustomEvents({
                 >
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <Badge variant="outline" className="bg-neutral-700 text-neutral-200 border-neutral-600">
+                      <Badge variant="outline" className="bg-blue-800 text-blue-100 border-blue-400">
                         {event.event_name}
                       </Badge>
                       <p className="text-xs text-neutral-400">

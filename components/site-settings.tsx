@@ -42,7 +42,7 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
       setIsDownloadingAnalytics(true);
       const [pageViewsRes, visitsRes] = await Promise.all([
         supabase.from("page_views").select("*").eq("domain", website),
-        supabase.from("visits").select("*").eq("website_id", website),
+        supabase.from("visits").select("*").eq("website", website),
       ]);
 
       if (pageViewsRes.data) downloadCSV(convertToCSV(pageViewsRes.data as unknown as Record<string, unknown>[]), `${website}-page-views.csv`);

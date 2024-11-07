@@ -24,19 +24,13 @@ export default function Footer() {
           href="/settings"
           className="hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
         >
-          Settings
-        </Link>
-        <Link
-          href="/settings"
-          className="hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
-        >
-          API Reference
+          Settings & API Keys
         </Link>
       </nav>
 
       <div className="flex items-center space-x-6">
         <Link
-          href="https://analyzr.vercel.app"
+          href="https://getanalyzr.vercel.app"
           className="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
           target="_blank"
           rel="noopener noreferrer"

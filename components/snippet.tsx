@@ -64,7 +64,7 @@ export default function Snippet() {
                   onClick={() => copySnippet(react_snippet)}
                   variant="ghost"
                   size="sm"
-                  className="text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
+                  className="border border-neutral-800 text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   Copy
@@ -93,7 +93,7 @@ export default function Snippet() {
                   onClick={() => copySnippet(next_snippet)}
                   variant="ghost"
                   size="sm"
-                  className="text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
+                  className="border border-neutral-800 text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   Copy

@@ -14,7 +14,7 @@ import {
   fetchPageSpeedMetrics,
   getPageSpeedMetrics,
 } from "@/actions/pageSpeedMetrics";
-import { Loader2, RefreshCw, ArrowUpIcon, ArrowDownIcon } from "lucide-react";
+import { Loader2, ArrowUpIcon, ArrowDownIcon, RefreshCcw } from "lucide-react";
 import { DETAILED_METRICS, PERFORMANCE_METRICS } from "@/lib/constants";
 import { getCategory, getRecommendations } from "@/lib/utils";
 
@@ -287,19 +287,16 @@ export default function Performance({
           <Button
             onClick={refreshMetrics}
             disabled={loading}
-            className="border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-white transition-all duration-200"
+            variant="outline"
+            size="icon"
+            className="border-neutral-800 bg-neutral-900/20 text-neutral-100 backdrop-blur-sm hover:bg-neutral-900/80 hover:text-white"
           >
             {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Updating...
-              </>
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <>
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Refresh
-              </>
+              <RefreshCcw className="h-4 w-4" />
             )}
+            <span className="sr-only">Refresh analytics</span>
           </Button>
         </div>
       </CardHeader>

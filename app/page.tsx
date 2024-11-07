@@ -75,7 +75,7 @@ export default function Home() {
                 videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
                 thumbnailSrc="/hero.png"
                 thumbnailAlt="Analytics Dashboard Preview"
-                url="analyzr.vercel.app"
+                url="getanalyzr.vercel.app"
               />
             </div>
           </BlurFade>
