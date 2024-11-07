@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowRightIcon, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import { BlurFade } from "@/components/ui/blur-fade";
@@ -18,10 +18,12 @@ export default function Home() {
         <div className="max-w-screen-xl mx-auto px-4 pb-14 pt-20 gap-12 text-neutral-600 md:px-8">
           <div className="space-y-8 max-w-5xl leading-0 lg:leading-5 mx-auto text-center">
             <BlurFade delay={0.1}>
+              <Link href="/dashboard">
               <span className="text-sm text-neutral-400 group mx-auto px-5 py-2 bg-gradient-to-tr from-neutral-300/5 via-neutral-400/5 to-transparent border-[2px] border-white/5 rounded-3xl w-fit cursor-pointer">
                 Event Monitoring & Analytics
-                <ChevronDown className="inline w-4 h-4 ml-2 group-hover:translate-y-1 duration-300" />
+                <ArrowRightIcon className="inline w-4 h-4 ml-2 group-hover:translate-x-0.5 duration-300 -mt-[0.1875rem]" />
               </span>
+              </Link>
             </BlurFade>
 
             <BlurFade delay={0.2}>
