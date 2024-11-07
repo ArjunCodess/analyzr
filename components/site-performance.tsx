@@ -16,7 +16,7 @@ import {
 } from "@/actions/pageSpeedMetrics";
 import { Loader2, RefreshCw, ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import { DETAILED_METRICS, PERFORMANCE_METRICS } from "@/lib/constants";
-import { getCategory } from "@/lib/utils";
+import { getCategory, getRecommendations } from "@/lib/utils";
 
 interface SitePerformanceProps {
   websiteId: string;
@@ -30,7 +30,7 @@ const CircularProgress = ({
   value: number;
   label: string;
 }) => {
-  const circumference = 2 * Math.PI * 40; // 40 is the radius of the circle
+  const circumference = 2 * Math.PI * 40;
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
   return (
@@ -104,72 +104,90 @@ const DetailedMetricCard = ({
   );
 };
 
-const SummaryCard = ({ metrics }: { metrics: PerformanceMetrics }) => {
+function PerformanceScoreCard({ metrics }: { metrics: PerformanceMetrics }) {
   const overallScore = Math.round(
-    (metrics.performance +
-      metrics.accessibility +
-      metrics.bestPractices +
-      metrics.seo) /
-      4
-  );
-  const isGood = overallScore >= 90;
+    (metrics.performance + metrics.accessibility + metrics.bestPractices + metrics.seo) / 4
+  )
+  const category = getCategory(overallScore)
 
   return (
-    <div className="group relative rounded-xl bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 p-6 transition-all duration-300 ease-in-out hover:bg-neutral-800/50 hover:border-neutral-700 col-span-1 lg:col-span-2">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-neutral-400">
-            Overall Performance
-          </p>
-          <p className="text-3xl tracking-tight font-semibold bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-transparent mt-2">
-            {overallScore}
-          </p>
-        </div>
-        <div
-          className={`p-3 rounded-full ${
-            isGood ? "bg-green-500/20" : "bg-yellow-500/20"
-          }`}
-        >
-          {isGood ? (
-            <ArrowUpIcon className="w-6 h-6 text-green-500" />
+    <div className="group relative h-full rounded-xl bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 p-2 sm:p-4 transition-all duration-300 ease-in-out hover:bg-neutral-800/50 hover:border-neutral-700">
+      <div className="flex flex-col h-full items-center justify-center p-4 sm:p-6 rounded-lg bg-neutral-900/90 border border-neutral-800">
+        <div className={`p-2 sm:p-3 rounded-full ${category.bg} mb-4 sm:mb-6`}>
+          {category.isGood ? (
+            <ArrowUpIcon className={`w-6 h-6 sm:w-8 sm:h-8 ${category.color}`} />
           ) : (
-            <ArrowDownIcon className="w-6 h-6 text-yellow-500" />
+            <ArrowDownIcon className={`w-6 h-6 sm:w-8 sm:h-8 ${category.color}`} />
           )}
         </div>
+        <div className="flex flex-col items-center text-center">
+          <div className="text-4xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-transparent mb-2 sm:mb-3">
+            {overallScore}
+          </div>
+          <div className={`text-xs sm:text-sm md:text-base font-semibold ${category.color} mb-3 sm:mb-4`}>
+            {category.label}
+          </div>
+          <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-2">
+            Overall Score
+          </h3>
+          <p className="text-xs sm:text-sm md:text-base text-neutral-400 max-w-[280px]">
+            {category.isGood 
+              ? "Your website is performing well across all key metrics"
+              : "There's room for improvement in your website's performance"}
+          </p>
+        </div>
       </div>
-      <p className="mt-2 text-sm text-neutral-500">
-        {isGood
-          ? "Great job! Your website is performing well."
-          : "There's room for improvement in your website's performance."}
-      </p>
       <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-neutral-700 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
     </div>
-  );
-};
+  )
+}
 
-const PerformanceCategory = ({ score }: { score: number }) => {
-  const category = getCategory(score);
+const OptimizationCard = ({ metrics }: { metrics: PerformanceMetrics }) => {
+  const recommendations = getRecommendations(metrics);
 
   return (
-    <div className="group relative rounded-xl bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 p-6 transition-all duration-300 ease-in-out hover:bg-neutral-800/50 hover:border-neutral-700">
-      <div className="flex items-center justify-between">
+    <div className="group relative h-full rounded-xl bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 p-6 transition-all duration-300 ease-in-out hover:bg-neutral-800/50 hover:border-neutral-700">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-sm font-medium text-neutral-400">Performance Category</p>
-          <p className={`text-3xl tracking-tight font-bold mt-2 ${category.color}`}>
-            {category.label}
-          </p>
-        </div>
-        <div className={`p-3 rounded-full ${category.bg}`}>
-          {category.isGood ? (
-            <ArrowUpIcon className={`w-6 h-6 ${category.color}`} />
-          ) : (
-            <ArrowDownIcon className={`w-6 h-6 ${category.color}`} />
-          )}
+          <h3 className="text-lg md:text-xl font-semibold text-white">Optimization Opportunities</h3>
+          <p className="text-sm md:text-base text-neutral-400">Actionable recommendations to improve your site</p>
         </div>
       </div>
-      <p className="mt-2 text-sm text-neutral-500">
-        Based on overall performance metrics
-      </p>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {recommendations.length > 0 ? (
+          recommendations.map((rec, index) => (
+            <div
+              key={index}
+              className="group/card flex items-start space-x-4 p-4 rounded-lg bg-neutral-900/50 border border-neutral-800 transition-all duration-300 hover:bg-neutral-800/50 hover:border-neutral-700"
+            >
+              <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-neutral-800/50 text-2xl">
+                {rec.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <h4 className="font-medium text-neutral-200 truncate">{rec.title}</h4>
+                  <span className={`text-sm px-2 py-1 rounded-full ${
+                    typeof rec.metric === 'number' && rec.metric >= 90
+                      ? 'bg-green-500/20 text-green-400'
+                      : 'bg-yellow-500/20 text-yellow-400'
+                  }`}>
+                    {rec.metric}
+                  </span>
+                </div>
+                <p className="text-sm text-neutral-500 line-clamp-2">{rec.description}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="col-span-full flex flex-col items-center justify-center py-12 px-4">
+            <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
+              <ArrowUpIcon className="w-6 h-6 text-green-500" />
+            </div>
+            <p className="text-neutral-400 text-center">Great job! No immediate improvements needed.</p>
+          </div>
+        )}
+      </div>
       <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-neutral-700 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
     </div>
   );
@@ -305,15 +323,15 @@ export default function Performance({
               format={item.format}
             />
           ))}
-          <PerformanceCategory
-            score={(
-              metrics.performance +
-              metrics.accessibility +
-              metrics.bestPractices +
-              metrics.seo
-            ) / 4}
-          />
-          <SummaryCard metrics={metrics} />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3 mt-6">
+          <div className="lg:col-span-1 h-full">
+            <PerformanceScoreCard metrics={metrics} />
+          </div>
+          <div className="lg:col-span-2 h-full">
+            <OptimizationCard metrics={metrics} />
+          </div>
         </div>
 
         {error && <p className="mt-6 text-sm text-red-400">{error}</p>}

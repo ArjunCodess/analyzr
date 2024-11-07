@@ -43,6 +43,22 @@ const formatDate = (dateString: string) => {
   });
 };
 
+const groupDataByMonth = (data: { date: string; pageViews: number; visits: number }[]) => {
+  return data.reduce((acc, item) => {
+    const date = new Date(item.date);
+    const monthKey = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    
+    if (!acc[monthKey]) {
+      acc[monthKey] = { date: monthKey, pageViews: 0, visits: 0 };
+    }
+    
+    acc[monthKey].pageViews += item.pageViews;
+    acc[monthKey].visits += item.visits;
+    
+    return acc;
+  }, {} as Record<string, { date: string; pageViews: number; visits: number }>);
+};
+
 export default function AnalyticsChart({
   pageViews,
   visits,
@@ -98,13 +114,23 @@ export default function AnalyticsChart({
       }
     });
 
-  const chartData = Object.values(groupedData).sort(
+  let chartData = Object.values(groupedData).sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
+  const shouldGroupByMonth = timePeriod === "0" || 
+    ["last 90 days", "last 365 days"].includes(timePeriod);
+
+  if (shouldGroupByMonth) {
+    const monthlyData = groupDataByMonth(chartData);
+    chartData = Object.values(monthlyData).sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+  }
+
   const CustomTooltip = ({ 
     active, 
-    payload, 
+    payload,
     label 
   }: {
     active?: boolean;
@@ -164,12 +190,15 @@ export default function AnalyticsChart({
               tickMargin={10}
               axisLine={false}
               tick={{ fill: "#9CA3AF" }}
-              tickFormatter={(value) =>
-                new Date(value).toLocaleDateString("en-US", {
+              tickFormatter={(value) => {
+                if (shouldGroupByMonth) {
+                  return value;
+                }
+                return new Date(value).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
-                })
-              }
+                });
+              }}
             />
             <YAxis
               tickLine={false}

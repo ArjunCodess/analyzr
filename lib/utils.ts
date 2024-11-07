@@ -1,6 +1,6 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { PageView, Visit, GroupedView, GroupedSource, GroupedLocation, GroupedOS } from "@/types";
+import { PageView, Visit, GroupedView, GroupedSource, GroupedLocation, GroupedOS, PerformanceMetrics } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -156,7 +156,6 @@ export function groupByBrowser(pageViews: PageView[]) {
   }));
 }
 
-// Add this helper function
 export function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.toLowerCase().slice(1);
 }
@@ -167,4 +166,59 @@ export const getCategory = (score: number) => {
   if (score >= 70) return { label: 'AVERAGE', color: 'text-yellow-500', bg: 'bg-yellow-500/20', isGood: false };
   if (score >= 50) return { label: 'POOR', color: 'text-orange-500', bg: 'bg-orange-500/20', isGood: false };
   return { label: 'CRITICAL', color: 'text-red-500', bg: 'bg-red-500/20', isGood: false };
+};
+
+export const getRecommendations = (metrics: PerformanceMetrics) => {
+  const recommendations = [];
+  
+  if (metrics.performance < 90) {
+    recommendations.push({
+      title: "Speed Optimization",
+      description: "Consider optimizing images and implementing caching strategies",
+      metric: metrics.performance,
+      icon: "⚡"
+    });
+  }
+  if (metrics.firstContentfulPaint > 1800) {
+    recommendations.push({
+      title: "First Contentful Paint",
+      description: "Reduce server response time and minimize render-blocking resources",
+      metric: `${(metrics.firstContentfulPaint / 1000).toFixed(1)}s`,
+      icon: "🎨"
+    });
+  }
+  if (metrics.accessibility < 90) {
+    recommendations.push({
+      title: "Accessibility",
+      description: "Improve ARIA labels and contrast ratios",
+      metric: metrics.accessibility,
+      icon: "♿"
+    });
+  }
+  if (metrics.cumulativeLayoutShift > 0.1) {
+    recommendations.push({
+      title: "Layout Stability",
+      description: "Reduce layout shifts by specifying image dimensions",
+      metric: metrics.cumulativeLayoutShift.toFixed(3),
+      icon: "📏"
+    });
+  }
+  if (metrics.seo < 90) {
+    recommendations.push({
+      title: "SEO Optimization",
+      description: "Ensure all pages have meta descriptions and proper heading structure",
+      metric: metrics.seo,
+      icon: "🔍"
+    });
+  }
+  if (metrics.totalBlockingTime > 300) {
+    recommendations.push({
+      title: "Interactivity",
+      description: "Reduce JavaScript execution time and split long tasks",
+      metric: `${(metrics.totalBlockingTime / 1000).toFixed(1)}s`,
+      icon: "⌛"
+    });
+  }
+
+  return recommendations.slice(0, 6);
 };
