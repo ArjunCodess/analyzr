@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
   return (
     <main className="flex flex-col divide-y divide-neutral-800">
-      <div className="absolute h-screen w-screen bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,rgba(37,99,235,0.3),rgba(255,255,255,0))]"></div>
+      <div className="absolute left-1/2 -translate-x-1/2 h-[80vh] w-[80vw] bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,rgba(37,99,235,0.3),rgba(255,255,255,0))]"></div>
 
       <section className="relative max-w-full mx-auto md:pb-8">
         <div className="max-w-screen-xl mx-auto px-4 pb-14 pt-20 gap-12 text-neutral-600 md:px-8">
@@ -43,7 +43,7 @@ export default function Home() {
             </BlurFade>
 
             <BlurFade delay={0.4}>
-              <div className="items-center justify-center gap-x-3 space-y-3 sm:flex sm:space-y-0">
+              <div className="items-center justify-center space-x-3 space-y-3 sm:flex sm:space-y-0">
                 <span className="relative inline-block overflow-hidden rounded-full p-[1.5px]">
                   <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#93C5FD_0%,#1D4ED8_50%,#93C5FD_100%)]" />
                   <div className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-neutral-950 text-xs font-medium text-neutral-50 backdrop-blur-3xl">
@@ -200,8 +200,8 @@ export default function Home() {
       <section className="px-4 py-28 relative overflow-hidden">
         <div className="relative max-w-4xl mx-auto space-y-6 md:space-y-8">
           <div className="space-y-4 md:space-y-6">
-            <h1 className="text-left md:text-center tracking-tight text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)] leading-tight">
-              Powerful analytics for modern applications
+            <h1 className="text-left md:text-center tracking-tight text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)] lg:leading-[1.15]">
+              Analytics that work for <br /> you and your team
             </h1>
             <div className="text-[0.84rem] text-zinc-400 text-left md:text-center md:text-lg max-w-2xl md:mx-auto">
               Track user behavior, monitor performance metrics, and receive real-time notifications across all your platforms. 

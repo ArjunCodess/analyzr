@@ -277,7 +277,7 @@ export default function Performance({
       <CardHeader className="border-b border-neutral-800">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-2xl font-bold text-white">
+            <CardTitle className="text-xl font-bold text-white">
               Performance Metrics
             </CardTitle>
             <CardDescription className="text-neutral-400">
@@ -301,7 +301,7 @@ export default function Performance({
         </div>
       </CardHeader>
       <CardContent className="p-6 py-10">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 mb-12">
+        <div className="grid gap-8 grid-cols-2 lg:grid-cols-4 mb-12">
           {PERFORMANCE_METRICS.map((metric) => (
             <CircularProgress
               key={metric}

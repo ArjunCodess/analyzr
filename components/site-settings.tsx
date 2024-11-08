@@ -126,13 +126,13 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
     <div className="space-y-6 w-full max-w-[95vw] mx-auto">
       {/* Installation Section */}
       <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm overflow-hidden">
-        <CardHeader className="pb-0">
+        <CardHeader className="pb-1 sm:pb-0">
           <CardTitle className="text-neutral-300 text-sm md:text-base lg:text-lg flex items-center gap-2">
             <Code className="h-4 w-4 md:h-5 md:w-5" />
             <span>Installation</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0 sm:p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="w-full overflow-x-auto">
             <div className="min-w-[300px]">
               <Snippet />
