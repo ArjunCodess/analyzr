@@ -153,6 +153,18 @@ export default function SiteCustomEvents({
                       </p>
                     </div>
                     <p className="text-sm text-neutral-300 mt-2">{event.message}</p>
+                    {event.fields && event.fields.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-neutral-800">
+                        <div className="grid grid-cols-2 gap-2">
+                          {event.fields.map((field, idx) => (
+                            <div key={idx} className="space-y-1">
+                              <p className="text-xs font-medium text-neutral-400">{field.name}</p>
+                              <p className="text-sm text-neutral-200">{field.value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}

@@ -37,7 +37,7 @@ export async function OPTIONS() {
 interface EventRequest {
   name: string;
   domain: string;
-  description?: string;
+  description: string;
   fields?: Array<{ name: string; value: string; inline?: boolean }>;
   emoji?: string;
 }
@@ -69,9 +69,9 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      if (name.trim() === "" || domain.trim() === "") {
+      if (name.trim() === "" || domain.trim() === "" || description.trim() === "") {
         return NextResponse.json(
-          { error: "Name or Domain Fields Must NOT Be Empty." },
+          { error: "Name, Domain, and Description Fields Must NOT Be Empty." },
           { status: 400, headers: getCorsHeaders() }
         );
       }
@@ -79,8 +79,9 @@ export async function POST(req: NextRequest) {
       const { error: eventError } = await supabase.from("events").insert([
         {
           event_name: name.toLowerCase(),
-          website_id: domain,
+          domain: domain,
           message: description,
+          fields: fields,
         },
       ]);
 

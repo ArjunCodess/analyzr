@@ -18,9 +18,17 @@ const headers = {
 };
   
 const eventData = {
-    name: "",       // required
-    domain: "",     // required
-    description: "" // optional
+    name: "",        // required - event name
+    domain: "",      // required - your website domain
+    description: "", // required - event description
+    emoji: "🔔",    // optional - emoji for Discord notification
+    fields: [       // optional - additional fields for Discord notification
+      {
+        name: "Field Name",
+        value: "Field Value",
+        inline: true // optional - display fields in same line
+      }
+    ]
 };
   
 const sendRequest = async () => {
@@ -44,9 +52,17 @@ headers = {
 }
   
 event_data = {
-    "name": "",        # required
-    "domain": "",      # required
-    "description": ""  # optional
+    "name": "",        # required - event name
+    "domain": "",      # required - your website domain
+    "description": "", # required - event description
+    "emoji": "🔔",    # optional - emoji for Discord notification
+    "fields": [       # optional - additional fields for Discord notification
+      {
+        "name": "Field Name",
+        "value": "Field Value",
+        "inline": True # optional - display fields in same line
+      }
+    ]
 }
   
 def send_request():

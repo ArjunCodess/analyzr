@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRightIcon, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import { BlurFade } from "@/components/ui/blur-fade";
@@ -8,6 +8,7 @@ import { MockDiscordUI } from "@/components/mock-discord-ui";
 import { AnimatedList } from "@/components/ui/animated-list";
 import { DiscordMessage } from "@/components/discord-message";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -18,11 +19,19 @@ export default function Home() {
         <div className="max-w-screen-xl mx-auto px-4 pb-14 pt-20 gap-12 text-neutral-600 md:px-8">
           <div className="space-y-8 max-w-5xl leading-0 lg:leading-5 mx-auto text-center">
             <BlurFade delay={0.1}>
-              <Link href="/dashboard">
-              <span className="text-sm text-neutral-400 group mx-auto px-5 py-2 bg-gradient-to-tr from-neutral-300/5 via-neutral-400/5 to-transparent border-[2px] border-white/5 rounded-3xl w-fit cursor-pointer">
-                Event Monitoring & Analytics
-                <ArrowRightIcon className="inline w-4 h-4 ml-2 group-hover:translate-x-0.5 duration-300 -mt-[0.1875rem]" />
-              </span>
+              <Link
+                target="_blank"
+                href="https://www.producthunt.com/posts/getanalyzr?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-getanalyzr"
+                className="flex justify-center"
+              >
+                <Image
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=586803&theme=dark"
+                  alt="GetAnalyzr - Real-time analytics for modern applications | Product Hunt"
+                  className="w-[180px] h-[40px] md:w-[250px] md:h-[54px]"
+                  width={250}
+                  height={54}
+                  unoptimized
+                />
               </Link>
             </BlurFade>
 
@@ -37,8 +46,9 @@ export default function Home() {
 
             <BlurFade delay={0.3}>
               <p className="max-w-2xl mx-auto text-neutral-300">
-                Monitor every aspect of your application in real-time. Track user journeys, capture events, 
-                and make data-driven decisions with our comprehensive analytics platform.
+                Monitor every aspect of your application in real-time. Track
+                user journeys, capture events, and make data-driven decisions
+                with our comprehensive analytics platform.
               </p>
             </BlurFade>
 
@@ -93,8 +103,9 @@ export default function Home() {
                   Built for modern applications
                 </h3>
                 <p className="mt-3 text-gray-200">
-                  Powerful event tracking and analytics that scales with your application. Deploy in minutes 
-                  and start monitoring your key metrics instantly.
+                  Powerful event tracking and analytics that scales with your
+                  application. Deploy in minutes and start monitoring your key
+                  metrics instantly.
                 </p>
               </div>
               <div
@@ -151,8 +162,9 @@ export default function Home() {
                   Real-time event monitoring
                 </h3>
                 <p className="mt-3 text-gray-200">
-                  Get instant Discord notifications for critical events, conversion milestones, and user activities. 
-                  Stay on top of your application&apos;s performance 24/7.
+                  Get instant Discord notifications for critical events,
+                  conversion milestones, and user activities. Stay on top of
+                  your application&apos;s performance 24/7.
                 </p>
               </div>
             </BlurFade>
@@ -204,8 +216,9 @@ export default function Home() {
               Analytics that work for <br /> you and your team
             </h1>
             <div className="text-[0.84rem] text-zinc-400 text-left md:text-center md:text-lg max-w-2xl md:mx-auto">
-              Track user behavior, monitor performance metrics, and receive real-time notifications across all your platforms. 
-              Get the insights you need to optimize your application and drive growth.
+              Track user behavior, monitor performance metrics, and receive
+              real-time notifications across all your platforms. Get the
+              insights you need to optimize your application and drive growth.
             </div>
             <div
               className="absolute inset-0 max-w-xs h-44 blur-[118px] -z-50"
