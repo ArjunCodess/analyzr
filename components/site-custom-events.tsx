@@ -36,7 +36,17 @@ export default function SiteCustomEvents({
       <Card className="border-neutral-800 bg-[#0a0a0a] shadow-lg">
         <CardContent className="p-12 text-center">
           <p className="text-neutral-100 text-lg font-semibold">No custom events recorded yet</p>
-          <p className="text-neutral-400 mt-2">Custom events will appear here once they are tracked</p>
+          <p className="text-neutral-400 mt-2">
+            Custom events will appear here once they are tracked. Learn how to implement custom events in our{" "}
+            <a 
+              href="https://github.com/ArjunCodess/analyzr#readme" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 underline"
+            >
+              documentation
+            </a>.
+          </p>
         </CardContent>
       </Card>
     )
@@ -45,8 +55,21 @@ export default function SiteCustomEvents({
   return (
     <div className="space-y-6">
       <Card className="border-neutral-800 bg-[#0a0a0a] shadow-lg overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
-      <CardTitle className="text-xl font-bold text-neutral-100">Custom Events Overview</CardTitle>
+        <CardHeader className="flex flex-col pb-4">
+          <CardTitle className="text-xl font-bold text-neutral-100">
+            Custom Events Overview
+          </CardTitle>
+          <p className="text-sm text-neutral-400">
+            Learn more in our{" "}
+            <a 
+              href="https://github.com/ArjunCodess/analyzr#readme" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 underline"
+            >
+              documentation
+            </a>
+          </p>
         </CardHeader>
         <CardContent className="px-4 pb-1">
           <Carousel

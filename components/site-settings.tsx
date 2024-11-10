@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/config/supabase";
 import { Trash2, Download, BarChart2, Activity, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -131,6 +131,17 @@ export default function SiteSettings({ website }: SiteSettingsProps) {
             <Code className="h-4 w-4 md:h-5 md:w-5" />
             <span>Installation</span>
           </CardTitle>
+          <CardDescription className="text-neutral-400 mt-2">
+            For detailed setup instructions and advanced usage, check our{" "}
+            <a 
+              href="https://github.com/ArjunCodess/analyzr#readme" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 underline"
+            >
+              documentation
+            </a>.
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
           <div className="w-full overflow-x-auto">

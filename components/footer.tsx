@@ -9,10 +9,10 @@ export default function Footer() {
 
       <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-neutral-500">
         <Link
-          href="/docs"
+          href="https://github.com/ArjunCodess/analyzr#readme"
           className="hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
         >
-          Docs
+          Documentation
         </Link>
         <Link
           href="/dashboard"

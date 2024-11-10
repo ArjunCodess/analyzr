@@ -59,10 +59,10 @@ export default function Home() {
                   <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#93C5FD_0%,#1D4ED8_50%,#93C5FD_100%)]" />
                   <div className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-neutral-950 text-xs font-medium text-neutral-50 backdrop-blur-3xl">
                     <Link
-                      href="/docs"
+                      href="https://github.com/ArjunCodess/analyzr#readme"
                       className="inline-flex rounded-full text-center items-center justify-center bg-neutral-900 text-neutral-300 border-neutral-800 border hover:bg-neutral-900/80 transition-colors py-3 px-10 md:text-base"
                     >
-                      Open Docs
+                      Open Documentation
                     </Link>
                   </div>
                 </span>

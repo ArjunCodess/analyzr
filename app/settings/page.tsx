@@ -180,6 +180,35 @@ export default function SettingsPage() {
       <div className="container mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-white mb-8">API Settings</h1>
         <div className="space-y-8">
+          {/* Documentation Card - New */}
+          <Card className="border-neutral-800 bg-neutral-900 shadow-2xl">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-neutral-100">
+                Documentation
+              </CardTitle>
+              <CardDescription className="text-neutral-400">
+                Get started with our comprehensive documentation. Learn about all features, 
+                integrations, and best practices.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-neutral-400">
+                  Visit our{" "}
+                  <a 
+                    href="https://github.com/ArjunCodess/analyzr#readme" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300 underline"
+                  >
+                    GitHub documentation
+                  </a>
+                  {" "}for detailed guides.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Discord ID Card */}
           <Card className="border-neutral-800 bg-neutral-900 shadow-2xl">
             <CardHeader>
@@ -319,10 +348,6 @@ export default function SettingsPage() {
               <CardTitle className="text-xl font-semibold text-neutral-100">
                 Usage Instructions
               </CardTitle>
-              <CardDescription className="text-neutral-400">
-                Learn how to integrate our custom events tracking into your
-                website.
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="mb-4 text-sm text-neutral-400">

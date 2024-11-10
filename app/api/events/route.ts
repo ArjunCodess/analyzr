@@ -2,15 +2,30 @@ import { supabase } from "@/config/supabase";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { getCorsHeaders } from '@/lib/cors';
-import { DiscordClient } from '@/lib/discord-client';
+import { getCorsHeaders } from "@/lib/cors";
+import { DiscordClient } from "@/lib/discord-client";
 import { UserData } from "@/types";
 
 export async function GET() {
-  const { data } = await supabase.from("events").select();
-  return new Response(JSON.stringify(data), {
-    headers: getCorsHeaders(),
-  });
+  try {
+    const { data, error } = await supabase.from("events").select("*");
+
+    if (error) {
+      return NextResponse.json(
+        { error: "Failed to fetch events" },
+        { status: 500, headers: getCorsHeaders() }
+      );
+    }
+
+    return NextResponse.json(data, {
+      headers: getCorsHeaders(),
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500, headers: getCorsHeaders() }
+    );
+  }
 }
 
 export async function OPTIONS() {
@@ -19,11 +34,25 @@ export async function OPTIONS() {
   });
 }
 
+interface EventRequest {
+  name: string;
+  domain: string;
+  description?: string;
+  fields?: Array<{ name: string; value: string; inline?: boolean }>;
+  emoji?: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const headersList = await headers();
     const authHeader = headersList.get("authorization");
-    const { name, domain, description } = await req.json();
+    const {
+      name,
+      domain,
+      description,
+      fields = [],
+      emoji = "🔔",
+    } = (await req.json()) as EventRequest;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const apiKey = authHeader.split("Bearer ")[1];
@@ -66,28 +95,19 @@ export async function POST(req: NextRequest) {
         try {
           const discord = new DiscordClient(process.env.DISCORD_BOT_TOKEN);
           const dmChannel = await discord.createDM(userData.discord_id);
-          
+
           await discord.sendEmbed(dmChannel.id, {
-            title: `🔔 New Event: ${name}`,
-            description: description || `New event recorded from ${domain}`,
+            title: `${emoji} New Event: ${name}`,
+            description: description,
             color: 0x0099ff,
             timestamp: new Date().toISOString(),
             fields: [
               {
-                name: "Website",
+                name: "Domain",
                 value: domain,
-                inline: true,
+                inline: true
               },
-              {
-                name: "Event", 
-                value: name,
-                inline: true,
-              },
-              {
-                name: "User",
-                value: `ID: ${userData.user_id}`,
-                inline: false,
-              }
+              ...fields
             ],
           });
 
@@ -96,7 +116,7 @@ export async function POST(req: NextRequest) {
             { status: 200, headers: getCorsHeaders() }
           );
         } catch (discordError) {
-          console.error('Discord delivery failed:', discordError);
+          console.error("Discord delivery failed:", discordError);
           return NextResponse.json(
             { message: "Event recorded but Discord notification failed" },
             { status: 200, headers: getCorsHeaders() }
@@ -115,7 +135,8 @@ export async function POST(req: NextRequest) {
       { status: 401, headers: getCorsHeaders() }
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json(
       { error: errorMessage },
       { status: 500, headers: getCorsHeaders() }

@@ -90,11 +90,22 @@ export interface Visit {
   source: string | null;
 }
 
+export interface CustomField {
+  name: string;
+  value: string;
+  inline?: boolean;
+}
+
 export interface CustomEvent {
   id: string;
   event_name: string;
+  website_id: string;
   message: string;
-  timestamp: string;
+  created_at: string;
+  fields?: CustomField[];
+  emoji?: string;
+  domain?: string;
+  description?: string;
 }
 
 export interface GroupedView {
@@ -183,14 +194,6 @@ export interface UserData {
   api: string;
   user_id: string;
   discord_id?: string;
-}
-
-export interface CustomEvent {
-  id: string;
-  event_name: string;
-  message: string;
-  created_at: string;
-  website_id: string;
 }
 
 export interface PerformanceMetrics {
