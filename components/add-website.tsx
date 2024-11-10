@@ -45,17 +45,19 @@ export default function AddWebsite() {
 
       if (data && data[0]) {
         try {
-          // Use the server action to get performance metrics
+          const urlString = website.trim();
+          const url = new URL(`https://${urlString}`);
+          
           const metrics = await getPageSpeedMetrics(
             data[0].name,
-            `https://${website.trim()}`
+            url.toString()
           );
           
           if (!metrics) {
             console.warn('Failed to fetch initial performance metrics');
           }
         } catch (metricsError) {
-          console.error('Error fetching performance metrics:', metricsError);
+          console.error('Error fetching performance metrics:', metricsError, 'Website:', website.trim());
         }
       }
 

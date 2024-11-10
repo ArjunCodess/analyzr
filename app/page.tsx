@@ -179,27 +179,33 @@ export default function Home() {
                       avatarSrc="/logo.png"
                       avatarAlt="Analyzr Avatar"
                       username="Analyzr"
-                      timestamp="Today at 9:15 AM"
-                      title="New Event: purchase_completed"
-                      content={{
-                        "Purchase completed successfully": "",
-                        Website: "ecommerce-store.com",
-                        Event: "purchase_completed",
-                        User: "ID: f82c4a91-3d7e-42b8-9f3d-15e8c736a4b2",
-                      }}
+                      timestamp="Today at 5:20 PM"
+                      title="New Event: Production Database Error"
+                      description="A critical error has been detected in the production environment that requires immediate attention."
+                      emoji="🚨"
+                      fields={[
+                        { name: "Domain", value: "something.vercel.app", inline: true },
+                        { name: "Error Code", value: "ERR_CONNECTION_LIMIT", inline: true },
+                        { name: "Affected Services", value: "User Authentication, Payment Processing", inline: false },
+                        { name: "Timestamp", value: "2024-03-20 15:30:45 UTC", inline: true },
+                        { name: "Current Load", value: "98%", inline: true }
+                      ]}
                     />
                     <DiscordMessage
                       avatarSrc="/logo.png"
                       avatarAlt="Analyzr Avatar"
                       username="Analyzr"
-                      timestamp="Today at 9:12 AM"
-                      title="New Event: user_signup"
-                      content={{
-                        "New user registration": "",
-                        Website: "saas-platform.io",
-                        Event: "user_signup",
-                        User: "ID: 7d9e5b23-8c41-4a18-b6f9-2d3a8f5e9c14",
-                      }}
+                      timestamp="Today at 5:38 PM"
+                      title="New Event: Performance Alert"
+                      description="Performance degradation detected in application endpoints. This may affect user experience."
+                      emoji="⚠️"
+                      fields={[
+                        { name: "Domain", value: "nothing.com", inline: true },
+                        { name: "Average Response Time", value: "2.5s", inline: true },
+                        { name: "Affected Region", value: "EU WEST", inline: true },
+                        { name: "Impact Level", value: "Medium", inline: true },
+                        { name: "Recommended Action", value: "Scale up server instances and investigate potential bottlenecks", inline: false }
+                      ]}
                     />
                   </AnimatedList>
                 </MockDiscordUI>

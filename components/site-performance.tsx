@@ -27,11 +27,11 @@ const CircularProgress = ({
   value,
   label,
 }: {
-  value: number;
+  value: number | null;
   label: string;
 }) => {
   const circumference = 2 * Math.PI * 40;
-  const strokeDashoffset = circumference - (value / 100) * circumference;
+  const strokeDashoffset = circumference - ((value ?? 0) / 100) * circumference;
 
   return (
     <div className="flex flex-col items-center">
@@ -60,7 +60,9 @@ const CircularProgress = ({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-bold text-white">{value}</span>
+          <span className="text-2xl font-bold text-white">
+            {value === null ? 'N/A' : value}
+          </span>
         </div>
       </div>
       <span className="mt-2 text-sm font-medium text-neutral-300">{label}</span>
@@ -74,10 +76,12 @@ const DetailedMetricCard = ({
   format,
 }: {
   label: string;
-  value: string | number;
+  value: string | number | null;
   format: string;
 }) => {
-  const formatMetricValue = (value: string | number, format: string) => {
+  const formatMetricValue = (value: string | number | null, format: string) => {
+    if (value === null) return 'N/A';
+    
     const numericValue = typeof value === "string" ? parseFloat(value) : value;
     switch (format) {
       case "time":
@@ -105,10 +109,25 @@ const DetailedMetricCard = ({
 };
 
 function PerformanceScoreCard({ metrics }: { metrics: PerformanceMetrics }) {
-  const overallScore = Math.round(
-    (metrics.performance + metrics.accessibility + metrics.bestPractices + metrics.seo) / 4
-  )
-  const category = getCategory(overallScore)
+  const calculateOverallScore = () => {
+    const scores = [
+      metrics.performance,
+      metrics.accessibility,
+      metrics.bestPractices,
+      metrics.seo
+    ].filter(score => score !== null);
+
+    if (scores.length === 0) return null;
+    return Math.round(scores.reduce((a, b) => (a ?? 0) + (b ?? 0), 0) / scores.length);
+  };
+
+  const overallScore = calculateOverallScore();
+  const category = overallScore !== null ? getCategory(overallScore) : {
+    isGood: false,
+    label: 'No Data',
+    color: 'text-neutral-400',
+    bg: 'bg-neutral-800'
+  };
 
   return (
     <div className="group relative h-full rounded-xl bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 p-2 sm:p-4 transition-all duration-300 ease-in-out hover:bg-neutral-800/50 hover:border-neutral-700">
@@ -122,7 +141,7 @@ function PerformanceScoreCard({ metrics }: { metrics: PerformanceMetrics }) {
         </div>
         <div className="flex flex-col items-center text-center">
           <div className="text-4xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-transparent mb-2 sm:mb-3">
-            {overallScore}
+            {overallScore === null ? 'N/A' : overallScore}
           </div>
           <div className={`text-xs sm:text-sm md:text-base font-semibold ${category.color} mb-3 sm:mb-4`}>
             {category.label}
@@ -237,7 +256,7 @@ export default function Performance({
     }
   };
 
-  if (!metrics) {
+  if (!metrics || metrics == null) {
     return (
       <Card className="bg-[#0A0A0A] border border-[#1F1F1F] text-neutral-100">
         <CardHeader className="border-b border-neutral-800">

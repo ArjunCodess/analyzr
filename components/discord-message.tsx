@@ -1,24 +1,32 @@
 import { Clock } from "lucide-react";
 import Image from "next/image";
 
+interface DiscordField {
+  name: string;
+  value: string;
+  inline: boolean;
+}
+
 interface DiscordMessageProps {
   avatarSrc: string;
   avatarAlt: string;
   username: string;
   timestamp: string;
   title: string;
-  content: {
-    [key: string]: string;
-  };
+  description?: string;
+  fields: DiscordField[];
+  emoji: string;
 }
 
 export const DiscordMessage = ({
   avatarAlt,
   avatarSrc,
-  content,
+  fields,
   timestamp,
   title,
+  description,
   username,
+  emoji,
 }: DiscordMessageProps) => {
   return (
     <div className="w-full flex items-start justify-start">
@@ -48,19 +56,32 @@ export const DiscordMessage = ({
         <div className="bg-[#2f3136] w-full rounded p-2 lg:p-3 mb-3 lg:mb-4 mt-1 lg:mt-1.5">
           <div className="flex flex-row items-center justify-between mb-1.5 lg:mb-2">
             <p className="text-white order-1 text-sm lg:text-base font-normal lg:font-semibold leading-5 lg:leading-7">
-              🔔 {title}
+              {emoji} {title}
             </p>
           </div>
 
-          {Object.entries(content).map(([key, value]) => (
-            <p key={key} className="text-[#dcddde] text-xs lg:text-sm leading-5 lg:leading-6">
-              <span className="text-[#b9bbbe]">
-                {key}
-                {value ? ":" : ""}
-              </span>{" "}
-              {value}
+          {description && (
+            <p className="text-[#dcddde] text-xs lg:text-sm leading-5 lg:leading-6 mb-2">
+              {description}
             </p>
-          ))}
+          )}
+
+          <div className="grid grid-cols-2 gap-2">
+            {fields.map((field, index) => (
+              <div
+                key={index}
+                className={field.inline ? "col-span-1" : "col-span-2"}
+              >
+                <p className="text-[#dcddde] text-xs lg:text-sm leading-5 lg:leading-6">
+                  <span className="text-[#b9bbbe] font-bold">
+                    {field.name}
+                    {field.value ? ":" : ""}
+                  </span>{" "}
+                  {field.value}
+                </p>
+              </div>
+            ))}
+          </div>
 
           <p className="text-[#72767d] text-[10px] lg:text-xs mt-1.5 lg:mt-2 flex items-center">
             <Clock className="size-2.5 lg:size-3 mr-1 stroke-[1.5]" />
