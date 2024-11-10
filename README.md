@@ -1,8 +1,41 @@
+<div align="center">
+
 # Analyzr 📊
 
-Hey there! 👋
-
 ![OG](./public/og.png)
+
+![Next.js](https://img.shields.io/badge/next%20js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000000?style=for-the-badge&logo=shadcnui&logoColor=white)
+![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+
+</div>
+
+---
+
+### TL;DR 🚀
+Analyzr is a free and open-source analytics tool that requires just one line of code to set up.
+
+It comes with built-in Discord notifications and works seamlessly with any website, giving you all the analytics data you need to make informed decisions.
+
+---
+
+### 📑 Table of Contents
+- [Why Did We Build This?](#-why-did-we-build-this)
+- [Who Is This For?](#-who-is-this-for)
+- [What Can It Do?](#-what-can-it-do)
+- [How Does It Work?](#how-does-it-work)
+- [Discord Integration](#-discord-integration)
+- [What Makes It Different?](#-what-makes-it-different)
+- [Want to Try It?](#-want-to-try-it)
+- [Quick Links](#-quick-links)
+- [Let's Chat!](#-lets-chat)
+- [FAQ](#-frequently-asked-questions)
+
+---
+
+Hey there! 👋
 
 Thanks for checking out Analyzr. It's a free tool that manages your website analytics and performance and offers many other features.
 
@@ -26,9 +59,11 @@ You get all of this and more, totally free.
 
 ![Product 2](./public/product2.png)
 
-- Developers who want to track their side projects
-- Small business owners watching their website traffic
-- Anyone who wants simple analytics without paying $$$
+Developers who want to track their side projects.
+
+Small business owners watching their website traffic.
+
+Anyone who wants simple analytics without paying $$$.
 
 ---
 
@@ -129,6 +164,8 @@ And if you want, we can send updates about your website straight to your Discord
 
 You can look at our code on GitHub to see exactly how everything works.
 
+---
+
 ### 🤖 Discord Integration
 
 ![Product 3](./public/product3.png)
@@ -178,25 +215,6 @@ Once set up, you'll get real-time notifications for:
    - Real-time notifications
    - Custom alerts for important events
    - Manage everything from Discord
-
----
-
-### 🛠️ Tech We Used
-
-We kept it simple but powerful:
-
-- **Frontend:** 
-  - Next.js
-  - React
-  - TailwindCSS
-  - shadcn/ui
-
-- **Backend:** 
-  - Supabase
-
-- **Extra Stuff:**
-  - Discord API
-  - Vercel
 
 ---
 
@@ -261,3 +279,38 @@ Thanks for checking out Analyzr! We hope it makes your life a bit easier.
 Happy tracking! 📊
 
 P.S. If you like it, maybe give us a star on GitHub and an upvote on Product Hunt. ⭐
+
+---
+
+### ❓ Frequently Asked Questions
+
+1. **Is Analyzr really free?**
+   - Yes! We're 100% free and open source
+   - No hidden fees or premium features
+   - You can even self-host it if you want
+
+2. **Will this slow down my website?**
+   - Nope! Our tracking script is tiny (< 6KB)
+   - It loads asynchronously (won't block your page)
+   - Uses edge functions for super-fast response times
+
+3. **Is my data private and secure?**
+   - Absolutely! We use Supabase for secure data storage
+   - Your data is never sold or shared
+   - You can delete your data anytime
+   - We don't track personal user information
+
+4. **Can I use this with any website?**
+   - Yes! Works with:
+     - Next.js
+     - React
+     - Vue
+     - Plain HTML
+     - etc.
+
+5. **What's the difference between Analyzr and other analytics tools?**
+   - Free custom event tracking (others charge for this)
+   - Built-in Discord notifications
+   - No complex setup needed
+   - Privacy-focused approach
+   - Completely open source
