@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
 
       const { error: eventError } = await supabase.from("events").insert([
         {
-          event_name: name.toLowerCase(),
+          event_name: name,
           domain: domain,
           message: description,
           fields: fields,
