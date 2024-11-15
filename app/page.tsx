@@ -1,7 +1,6 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { FEATURES } from "@/lib/constants";
 import { MockDiscordUI } from "@/components/mock-discord-ui";
@@ -9,6 +8,7 @@ import { AnimatedList } from "@/components/ui/animated-list";
 import { DiscordMessage } from "@/components/discord-message";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Safari from "@/components/ui/safari";
 
 export default function Home() {
   return (
@@ -82,13 +82,9 @@ export default function Home() {
 
           <BlurFade delay={0.5} yOffset={20}>
             <div className="mt-20 mx-10">
-              <HeroVideoDialog
-                animationStyle="from-center"
-                videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
-                thumbnailSrc="/hero.png"
-                thumbnailAlt="Analytics Dashboard Preview"
-                url="getanalyzr.vercel.app"
-              />
+              <Safari url="https://getanalyzr.vercel.app">
+                <Image alt="Hero Image" src="/hero.png" width={2000} height={1000} />
+              </Safari>
             </div>
           </BlurFade>
         </div>
@@ -184,11 +180,27 @@ export default function Home() {
                       description="A critical error has been detected in the production environment that requires immediate attention."
                       emoji="🚨"
                       fields={[
-                        { name: "Domain", value: "something.vercel.app", inline: true },
-                        { name: "Error Code", value: "ERR_CONNECTION_LIMIT", inline: true },
-                        { name: "Affected Services", value: "User Authentication, Payment Processing", inline: false },
-                        { name: "Timestamp", value: "2024-03-20 15:30:45 UTC", inline: true },
-                        { name: "Current Load", value: "98%", inline: true }
+                        {
+                          name: "Domain",
+                          value: "something.vercel.app",
+                          inline: true,
+                        },
+                        {
+                          name: "Error Code",
+                          value: "ERR_CONNECTION_LIMIT",
+                          inline: true,
+                        },
+                        {
+                          name: "Affected Services",
+                          value: "User Authentication, Payment Processing",
+                          inline: false,
+                        },
+                        {
+                          name: "Timestamp",
+                          value: "2024-03-20 15:30:45 UTC",
+                          inline: true,
+                        },
+                        { name: "Current Load", value: "98%", inline: true },
                       ]}
                     />
                     <DiscordMessage
@@ -201,10 +213,23 @@ export default function Home() {
                       emoji="⚠️"
                       fields={[
                         { name: "Domain", value: "nothing.com", inline: true },
-                        { name: "Average Response Time", value: "2.5s", inline: true },
-                        { name: "Affected Region", value: "EU WEST", inline: true },
+                        {
+                          name: "Average Response Time",
+                          value: "2.5s",
+                          inline: true,
+                        },
+                        {
+                          name: "Affected Region",
+                          value: "EU WEST",
+                          inline: true,
+                        },
                         { name: "Impact Level", value: "Medium", inline: true },
-                        { name: "Recommended Action", value: "Scale up server instances and investigate potential bottlenecks", inline: false }
+                        {
+                          name: "Recommended Action",
+                          value:
+                            "Scale up server instances and investigate potential bottlenecks",
+                          inline: false,
+                        },
                       ]}
                     />
                   </AnimatedList>

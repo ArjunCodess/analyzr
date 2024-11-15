@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      if (name.trim() === "" || domain.trim() === "" || description.trim() === "") {
+      if (name == "" || domain == "" || description == "") {
         return NextResponse.json(
           { error: "Name, Domain, and Description Fields Must NOT Be Empty." },
           { status: 400, headers: getCorsHeaders() }
