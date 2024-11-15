@@ -31,6 +31,10 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const formatDate = (dateString: string) => {
+  if (dateString.includes('AM') || dateString.includes('PM')) {
+    return dateString;
+  }
+
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
     day: 'numeric',
@@ -43,17 +47,48 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const groupDataByMonth = (data: { date: string; pageViews: number; visits: number }[]) => {
+const getHourLabel = (date: Date) => {
+  const hours = date.getHours();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 || 12;
+  return `${hour12} ${ampm}`;
+};
+
+const isWithinSameMonth = (dates: Date[]) => {
+  if (dates.length === 0) return false;
+  const firstMonth = dates[0].getMonth();
+  const firstYear = dates[0].getFullYear();
+  return dates.every(date => 
+    date.getMonth() === firstMonth && 
+    date.getFullYear() === firstYear
+  );
+};
+
+const groupByTimeUnit = (data: { date: string; pageViews: number; visits: number }[], timePeriod: string) => {
+  const dates = data.map(item => new Date(item.date));
+  const sameMonth = isWithinSameMonth(dates);
+
   return data.reduce((acc, item) => {
     const date = new Date(item.date);
-    const monthKey = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-    
-    if (!acc[monthKey]) {
-      acc[monthKey] = { date: monthKey, pageViews: 0, visits: 0 };
+    let key: string;
+
+    if (timePeriod === "last 1 hour" || timePeriod === "last 1 day") {
+      // Group by hour
+      key = getHourLabel(date);
+    } else if ((timePeriod === "0" || timePeriod === "last 90 days" || timePeriod === "last 365 days") && !sameMonth) {
+      // Group by month only if data spans multiple months
+      key = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    } else {
+      // Group by day for same month or shorter periods
+      key = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
     
-    acc[monthKey].pageViews += item.pageViews;
-    acc[monthKey].visits += item.visits;
+    if (!acc[key]) {
+      acc[key] = { date: key, pageViews: 0, visits: 0 };
+    }
+    
+    acc[key].pageViews += item.pageViews;
+    acc[key].visits += item.visits;
     
     return acc;
   }, {} as Record<string, { date: string; pageViews: number; visits: number }>);
@@ -91,42 +126,59 @@ export default function AnalyticsChart({
     }
   };
 
-  const groupedData = visits
-    .filter(visit => filterDataByTimePeriod(new Date(visit.created_at)))
-    .reduce((acc, visit) => {
-      const date = new Date(visit.created_at).toLocaleDateString();
-      if (!acc[date]) {
-        acc[date] = { date, pageViews: 0, visits: 1 };
-      } else {
-        acc[date].visits++;
-      }
-      return acc;
-    }, {} as Record<string, { date: string; pageViews: number; visits: number }>);
+  const processData = () => {
+    const data: Record<string, { date: string; pageViews: number; visits: number }> = {};
 
-  pageViews
-    .filter(view => filterDataByTimePeriod(new Date(view.created_at)))
-    .forEach(view => {
-      const date = new Date(view.created_at).toLocaleDateString();
-      if (!groupedData[date]) {
-        groupedData[date] = { date, pageViews: 1, visits: 0 };
-      } else {
-        groupedData[date].pageViews++;
-      }
-    });
+    // Process visits
+    visits
+      .filter(visit => filterDataByTimePeriod(new Date(visit.created_at)))
+      .forEach(visit => {
+        const timestamp = visit.created_at;
+        if (!data[timestamp]) {
+          data[timestamp] = { date: timestamp, pageViews: 0, visits: 1 };
+        } else {
+          data[timestamp].visits++;
+        }
+      });
 
-  let chartData = Object.values(groupedData).sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+    // Process pageViews
+    pageViews
+      .filter(view => filterDataByTimePeriod(new Date(view.created_at)))
+      .forEach(view => {
+        const timestamp = view.created_at;
+        if (!data[timestamp]) {
+          data[timestamp] = { date: timestamp, pageViews: 1, visits: 0 };
+        } else {
+          data[timestamp].pageViews++;
+        }
+      });
 
-  const shouldGroupByMonth = timePeriod === "0" || 
-    ["last 90 days", "last 365 days"].includes(timePeriod);
-
-  if (shouldGroupByMonth) {
-    const monthlyData = groupDataByMonth(chartData);
-    chartData = Object.values(monthlyData).sort(
+    // Sort by timestamp
+    const sortedData = Object.values(data).sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-  }
+
+    // Group the data based on time period
+    const groupedData = groupByTimeUnit(sortedData, timePeriod);
+
+    // Sort the final data
+    return Object.values(groupedData).sort((a, b) => {
+      if (a.date.includes('AM') || a.date.includes('PM')) {
+        // Sort hours
+        const hourA = parseInt(a.date.split(' ')[0]);
+        const ampmA = a.date.split(' ')[1];
+        const hourB = parseInt(b.date.split(' ')[0]);
+        const ampmB = b.date.split(' ')[1];
+        
+        if (ampmA === ampmB) return hourA - hourB;
+        return ampmA === 'AM' ? -1 : 1;
+      } else {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+    });
+  };
+
+  const chartData = processData();
 
   const CustomTooltip = ({ 
     active, 
@@ -144,7 +196,11 @@ export default function AnalyticsChart({
     if (active && payload && payload.length) {
       return (
         <div className="bg-neutral-900 border border-neutral-800 p-3 rounded-lg shadow-lg">
-          <p className="text-neutral-300 mb-2">{formatDate(label!)}</p>
+          <p className="text-neutral-300 mb-2">
+            {(label?.includes('AM') || label?.includes('PM')) 
+              ? label 
+              : formatDate(label!)}
+          </p>
           {payload.map((pld, index: number) => (
             <div key={index} className="flex items-center gap-2">
               <div
@@ -190,15 +246,7 @@ export default function AnalyticsChart({
               tickMargin={10}
               axisLine={false}
               tick={{ fill: "#9CA3AF" }}
-              tickFormatter={(value) => {
-                if (shouldGroupByMonth) {
-                  return value;
-                }
-                return new Date(value).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
-              }}
+              tickFormatter={(value) => value}
             />
             <YAxis
               tickLine={false}
@@ -216,7 +264,7 @@ export default function AnalyticsChart({
                 stroke={chartConfig.visits.color}
                 fill={chartConfig.visits.color}
                 fillOpacity={0.4}
-                type="natural"
+                type="linear"
               />
             )}
             {activeTab === "pageViews" && (
@@ -226,7 +274,7 @@ export default function AnalyticsChart({
                 stroke={chartConfig.pageViews.color}
                 fill={chartConfig.pageViews.color}
                 fillOpacity={0.4}
-                type="natural"
+                type="linear"
               />
             )}
           </AreaChart>
