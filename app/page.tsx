@@ -9,6 +9,12 @@ import { DiscordMessage } from "@/components/discord-message";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Safari from "@/components/ui/safari";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function Home() {
   return (
@@ -83,7 +89,12 @@ export default function Home() {
           <BlurFade delay={0.5} yOffset={20}>
             <div className="mt-20 mx-10">
               <Safari url="https://getanalyzr.vercel.app">
-                <Image alt="Hero Image" src="/hero.png" width={2000} height={1000} />
+                <Image
+                  alt="Hero Image"
+                  src="/hero.png"
+                  width={2000}
+                  height={1000}
+                />
               </Safari>
             </div>
           </BlurFade>
@@ -243,7 +254,7 @@ export default function Home() {
       <section className="px-4 py-28 relative overflow-hidden">
         <div className="relative max-w-4xl mx-auto space-y-6 md:space-y-8">
           <div className="space-y-4 md:space-y-6">
-            <h1 className="text-left md:text-center tracking-tight text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)] lg:leading-[1.15]">
+            <h1 className="text-left md:text-center tracking-tight font-bold text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)] lg:leading-[1.15] text-3xl md:text-5xl sm:text-4xl">
               Analytics that work for <br /> you and your team
             </h1>
             <div className="text-[0.84rem] text-zinc-400 text-left md:text-center md:text-lg max-w-2xl md:mx-auto">
@@ -267,6 +278,71 @@ export default function Home() {
                 <ChevronRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="px-8 py-16">
+          <div className="mx-auto max-w-3xl space-y-12">
+            <div className="relative max-w-2xl mx-auto sm:text-center">
+              <div className="relative">
+                <h3 className="text-gray-200 text-3xl font-normal tracking-tighter md:text-5xl sm:text-4xl">
+                  Frequently Asked Questions
+                </h3>
+                <p className="mt-3 text-gray-200">
+                  Get answers to frequently asked questions about our analytics platform. Learn how Analyzr can help you track and understand your website&apos;s performance while keeping your data secure.
+                </p>
+              </div>
+              <div
+                className="absolute inset-0 max-w-xs mx-auto h-44 blur-[118px] -z-10"
+                style={{
+                  background:
+                    "linear-gradient(152.92deg, rgba(37, 99, 235, 0.2) 4.54%, rgba(59, 130, 246, 0.26) 34.2%, rgba(37, 99, 235, 0.1) 77.55%)",
+                }}
+              ></div>
+            </div>
+
+            <Accordion type="single" collapsible className="mt-16 space-y-4">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>
+                  Is Analyzr really free?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Yes! We&apos;re 100% free and open source. There are no hidden fees or premium features. You can even self-host it if you want.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2">
+                <AccordionTrigger>Will this slow down my website?</AccordionTrigger>
+                <AccordionContent>
+                  Nope! Our tracking script is tiny (less than 6KB) and loads asynchronously so it won&apos;t block your page. We use edge functions for super-fast response times.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3">
+                <AccordionTrigger>
+                  Is my data private and secure?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Absolutely! We use Supabase for secure data storage. Your data is never sold or shared, and you can delete it anytime. We don&apos;t track personal user information.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4">
+                <AccordionTrigger>Can I use this with any website?</AccordionTrigger>
+                <AccordionContent>
+                  Yes! Analyzr works with Next.js, React, Vue, plain HTML, and more. Our analytics solution is designed to be framework-agnostic.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-5">
+                <AccordionTrigger>What&apos;s the difference between Analyzr and other analytics tools?</AccordionTrigger>
+                <AccordionContent>
+                  Analyzr stands out by offering free custom event tracking (which others charge for), built-in Discord notifications, and a privacy-focused approach. There&apos;s no complex setup needed, and being completely open source means you have full transparency and control.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
       </section>

@@ -28,9 +28,14 @@ import SiteCustomEvents from "@/components/site-custom-events";
 import NoPageViewsState from "@/components/no-page-views";
 import GeneralAnalytics from "@/components/site-general-analytics";
 import Performance from "@/components/site-performance";
+import useUser from "@/hooks/useUser";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/config/supabase";
 
 export default function AnalyticsPage() {
   const { website } = useParams();
+  const { user, loading: userLoading } = useUser();
+  const router = useRouter();
 
   const [pageViews, setPageViews] = useState<PageView[]>([]);
   const [totalVisits, setTotalVisits] = useState<Visit[]>([]);
@@ -45,9 +50,45 @@ export default function AnalyticsPage() {
   >({});
   const [activeCustomEventTab, setActiveCustomEventTab] = useState("");
   const [filterValue, setFilterValue] = useState("0");
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.push('/sign-in');
+    }
+  }, [user, userLoading, router]);
+
+  const checkWebsiteOwnership = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("websites")
+        .select("id")
+        .eq("name", website)
+        .eq("user_id", user.id)
+        .single();
+
+      if (error || !data) {
+        setIsAuthorized(false);
+        router.push("/dashboard");
+        return false;
+      }
+
+      setIsAuthorized(true);
+      return true;
+    } catch (error) {
+      console.error("Error checking website ownership:", error);
+      setIsAuthorized(false);
+      router.push("/dashboard");
+      return false;
+    }
+  }, [user, website, router]);
 
   const handleFilterChange = useCallback(
     async (value: string) => {
+      if (!isAuthorized) return;
+      
       setLoading(true);
       try {
         const result = await fetchViews(website as string, value);
@@ -78,19 +119,32 @@ export default function AnalyticsPage() {
         setLoading(false);
       }
     },
-    [website]
+    [website, isAuthorized]
   );
 
   useEffect(() => {
-    if (!website) return;
+    if (user) {
+      checkWebsiteOwnership();
+    }
+  }, [checkWebsiteOwnership, user]);
 
-    handleFilterChange("0");
-  }, [website, handleFilterChange]);
+  useEffect(() => {
+    if (isAuthorized === true) {
+      handleFilterChange("0");
+    }
+  }, [isAuthorized, handleFilterChange]);
 
-  if (loading) return <Loading text="Getting your data..." />;
+  if (userLoading || isAuthorized === null || loading) {
+    return <Loading text="Getting your data..." />;
+  }
 
-  if (pageViews?.length === 0 && !loading)
+  if (!isAuthorized) {
+    return null;
+  }
+
+  if (pageViews?.length === 0 && !loading) {
     return <NoPageViewsState website={website as string} />;
+  }
 
   return (
     <div className="min-h-screen px-4 py-12">
