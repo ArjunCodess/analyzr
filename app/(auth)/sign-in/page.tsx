@@ -145,7 +145,7 @@ export default function SignIn() {
                   className="mr-2"
                 />
               )}
-              Github
+              GitHub
             </Button>
             <Button 
               variant="outline" 
@@ -246,8 +246,8 @@ export default function SignIn() {
             className="w-full text-sm text-muted-foreground hover:text-card-foreground"
           >
             {isSignUp 
-              ? "Already have an account? Sign in" 
-              : "Don't have an account? Sign up"}
+              ? "Already analyzing? Sign in." 
+              : "New to Analyzr? Start for free forever."}
           </Button>
         </CardContent>
       </Card>

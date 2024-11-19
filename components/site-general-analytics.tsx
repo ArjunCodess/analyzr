@@ -280,8 +280,8 @@ export default function GeneralAnalytics({
                     key={index}
                     className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
                   >
-                    <span className="text-sm text-neutral-100">/{view.page}</span>
-                    <span className="font-medium text-white">
+                    <span className="text-sm text-neutral-100 truncate max-w-[90%]">/{view.page}</span>
+                    <span className="font-medium text-white ml-2">
                       {abbreviateNumber(view.visits)}
                     </span>
                   </div>

@@ -30,12 +30,35 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string, isXAxis: boolean = false) => {
   if (dateString.includes('AM') || dateString.includes('PM')) {
     return dateString;
   }
 
-  const date = new Date(dateString);
+  // Try parsing the date first
+  let date;
+  try {
+    // If it's already a formatted date string (e.g. "January 15")
+    if (dateString.match(/[A-Za-z]+ \d+/)) {
+      const currentYear = new Date().getFullYear();
+      date = new Date(`${dateString}, ${currentYear}`);
+    } else {
+      date = new Date(dateString);
+    }
+  } catch {
+    console.error('Error parsing date:', dateString);
+    return dateString;
+  }
+
+  // For X-axis, show only month (abbreviated) and date
+  if (isXAxis) {
+    return date.toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'short',
+    });
+  }
+
+  // For tooltip, show full date with year
   return date.toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
@@ -54,20 +77,7 @@ const getHourLabel = (date: Date) => {
   return `${hour12} ${ampm}`;
 };
 
-const isWithinSameMonth = (dates: Date[]) => {
-  if (dates.length === 0) return false;
-  const firstMonth = dates[0].getMonth();
-  const firstYear = dates[0].getFullYear();
-  return dates.every(date => 
-    date.getMonth() === firstMonth && 
-    date.getFullYear() === firstYear
-  );
-};
-
 const groupByTimeUnit = (data: { date: string; pageViews: number; visits: number }[], timePeriod: string) => {
-  const dates = data.map(item => new Date(item.date));
-  const sameMonth = isWithinSameMonth(dates);
-
   return data.reduce((acc, item) => {
     const date = new Date(item.date);
     let key: string;
@@ -75,12 +85,12 @@ const groupByTimeUnit = (data: { date: string; pageViews: number; visits: number
     if (timePeriod === "last 1 hour" || timePeriod === "last 1 day") {
       // Group by hour
       key = getHourLabel(date);
-    } else if ((timePeriod === "0" || timePeriod === "last 90 days" || timePeriod === "last 365 days") && !sameMonth) {
-      // Group by month only if data spans multiple months
-      key = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    } else if (timePeriod === "0" || timePeriod === "last 90 days" || timePeriod === "last 365 days") {
+      // Always include year
+      key = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     } else {
-      // Group by day for same month or shorter periods
-      key = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      // Always include year for all other periods too
+      key = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
     
     if (!acc[key]) {
@@ -199,7 +209,7 @@ export default function AnalyticsChart({
           <p className="text-neutral-300 mb-2">
             {(label?.includes('AM') || label?.includes('PM')) 
               ? label 
-              : formatDate(label!)}
+              : formatDate(label!, false)}
           </p>
           {payload.map((pld, index: number) => (
             <div key={index} className="flex items-center gap-2">
@@ -246,7 +256,7 @@ export default function AnalyticsChart({
               tickMargin={10}
               axisLine={false}
               tick={{ fill: "#9CA3AF" }}
-              tickFormatter={(value) => value}
+              tickFormatter={(value) => formatDate(value, true)}
             />
             <YAxis
               tickLine={false}

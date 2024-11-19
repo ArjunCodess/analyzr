@@ -15,8 +15,111 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import CodeBlock from "@/components/code-block";
 
 export default function Home() {
+  const setupSnippets = [
+    {
+      name: "JavaScript",
+      language: "javascript",
+      filename: "setup.js",
+      code: `<script
+  defer
+  data-domain="YOUR_DOMAIN"
+  src="https://getanalyzr.vercel.app/tracking-script.js"
+>
+</script>`,
+    },
+    {
+      name: "Next.js",
+      language: "javascript",
+      filename: "setup.tsx",
+      code: `<Script
+  defer
+  data-domain="YOUR_DOMAIN"
+  src="https://getanalyzr.vercel.app/tracking-script.js"
+/>`,
+    },
+  ];
+
+  const eventSnippets = [
+    {
+      name: "JavaScript",
+      language: "javascript", 
+      filename: "events.js",
+      code: `const axios = require('axios');
+  
+const API_KEY = "YOUR_API_KEY";
+const url = "https://getanalyzr.vercel.app/api/events";
+const headers = {
+    "Content-Type": "application/json",
+    "Authorization": \`Bearer \${API_KEY}\`
+};
+  
+const eventData = {
+    name: "",        // required - event name
+    domain: "",      // required - your website domain
+    description: "", // required - event description
+    emoji: "🔔",    // optional - emoji for Discord notification
+    fields: [       // optional - additional fields for Discord notification
+      {
+        name: "Field Name",
+        value: "Field Value",
+        inline: true // optional - display fields in same line
+      }
+    ]
+};
+  
+const sendRequest = async () => {
+    try {
+      const response = await axios.post(url, eventData, { headers });
+      console.log("Event sent successfully", response.data);
+    } catch (error) {
+      console.error("Error:", error.response ? error.response.data : error.message);
+    }
+};
+  
+sendRequest();`,
+    },
+    {
+      name: "Python",
+      language: "python",
+      filename: "events.py", 
+      code: `import requests
+  
+API_KEY = "YOUR_API_KEY"
+url = "https://getanalyzr.vercel.app/api/events"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {API_KEY}"
+}
+  
+event_data = {
+    "name": "",        # required - event name
+    "domain": "",      # required - your website domain
+    "description": "", # required - event description
+    "emoji": "🔔",    # optional - emoji for Discord notification
+    "fields": [       # optional - additional fields for Discord notification
+      {
+        "name": "Field Name",
+        "value": "Field Value",
+        "inline": True # optional - display fields in same line
+      }
+    ]
+}
+  
+def send_request():
+    try:
+        response = requests.post(url, json=event_data, headers=headers)
+        response.raise_for_status()
+        print("Event sent successfully", response.json())
+    except requests.exceptions.RequestException as error:
+        print("Error:", error)
+  
+send_request()`,
+    }
+  ];
+
   return (
     <main className="flex flex-col divide-y divide-neutral-800">
       <div className="absolute left-1/2 -translate-x-1/2 h-[80vh] w-[80vw] bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,rgba(37,99,235,0.3),rgba(255,255,255,0))]"></div>
@@ -78,7 +181,7 @@ export default function Home() {
                       href="https://github.com/ArjunCodess/analyzr#readme"
                       className="inline-flex rounded-full text-center items-center justify-center bg-neutral-900 text-neutral-300 border-neutral-800 border hover:bg-neutral-900/80 transition-colors py-3 px-10 md:text-base"
                     >
-                      Open Documentation
+                      View Documentation
                     </Link>
                   </div>
                 </span>
@@ -251,10 +354,35 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="py-14 relative">
+        <div className="max-w-5xl mx-auto px-4 text-gray-400 md:px-8">
+          <div className="relative max-w-2xl mx-auto sm:text-center mb-12">
+            <div className="relative z-10">
+              <h3 className="text-gray-200 mt-4 text-3xl font-normal tracking-tighter md:text-5xl sm:text-4xl">
+                Copy. Paste. Deploy.
+              </h3>
+              <h3 className="text-gray-200 mt-2 mb-4 text-3xl font-normal tracking-tighter md:text-5xl sm:text-4xl">
+                Simple as that.
+              </h3>
+              <p className="mt-3 text-gray-200">
+                Get started quickly with ready-to-use code examples.
+                Copy, paste and customize to integrate event tracking in minutes.
+              </p>
+            </div>
+          </div>
+
+          <CodeBlock 
+            setupFiles={setupSnippets} 
+            eventFiles={eventSnippets} 
+            className="shadow-2xl" 
+          />
+        </div>
+      </section>
+
       <section className="px-4 py-28 relative overflow-hidden">
         <div className="relative max-w-4xl mx-auto space-y-6 md:space-y-8">
           <div className="space-y-4 md:space-y-6">
-            <h1 className="text-left md:text-center tracking-tight font-bold text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)] lg:leading-[1.15] text-3xl md:text-5xl sm:text-4xl">
+            <h1 className="text-left md:text-center tracking-tight font-bold text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)] lg:leading-[1.15] text-4xl sm:text-5xl md:text-6xl">
               Analytics that work for <br /> you and your team
             </h1>
             <div className="text-[0.84rem] text-zinc-400 text-left md:text-center md:text-lg max-w-2xl md:mx-auto">
@@ -274,7 +402,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-8 md:justify-center">
             <Link href="/dashboard">
               <Button className="border border-neutral-800 hover:bg-neutral-800">
-                Get Started
+                Start for FREE Forever
                 <ChevronRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
@@ -291,7 +419,10 @@ export default function Home() {
                   Frequently Asked Questions
                 </h3>
                 <p className="mt-3 text-gray-200">
-                  Get answers to frequently asked questions about our analytics platform. Learn how Analyzr can help you track and understand your website&apos;s performance while keeping your data secure.
+                  Get answers to frequently asked questions about our analytics
+                  platform. Learn how Analyzr can help you track and understand
+                  your website&apos;s performance while keeping your data
+                  secure.
                 </p>
               </div>
               <div
@@ -305,18 +436,22 @@ export default function Home() {
 
             <Accordion type="single" collapsible className="mt-16 space-y-4">
               <AccordionItem value="item-1">
-                <AccordionTrigger>
-                  Is Analyzr really free?
-                </AccordionTrigger>
+                <AccordionTrigger>Is Analyzr really free?</AccordionTrigger>
                 <AccordionContent>
-                  Yes! We&apos;re 100% free and open source. There are no hidden fees or premium features. You can even self-host it if you want.
+                  Yes! We&apos;re 100% free and open source. There are no hidden
+                  fees or premium features. You can even self-host it if you
+                  want.
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="item-2">
-                <AccordionTrigger>Will this slow down my website?</AccordionTrigger>
+                <AccordionTrigger>
+                  Will this slow down my website?
+                </AccordionTrigger>
                 <AccordionContent>
-                  Nope! Our tracking script is tiny (less than 6KB) and loads asynchronously so it won&apos;t block your page. We use edge functions for super-fast response times.
+                  Nope! Our tracking script is tiny (less than 6KB) and loads
+                  asynchronously so it won&apos;t block your page. We use edge
+                  functions for super-fast response times.
                 </AccordionContent>
               </AccordionItem>
 
@@ -325,21 +460,34 @@ export default function Home() {
                   Is my data private and secure?
                 </AccordionTrigger>
                 <AccordionContent>
-                  Absolutely! We use Supabase for secure data storage. Your data is never sold or shared, and you can delete it anytime. We don&apos;t track personal user information.
+                  Absolutely! We use Supabase for secure data storage. Your data
+                  is never sold or shared, and you can delete it anytime. We
+                  don&apos;t track personal user information.
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="item-4">
-                <AccordionTrigger>Can I use this with any website?</AccordionTrigger>
+                <AccordionTrigger>
+                  Can I use this with any website?
+                </AccordionTrigger>
                 <AccordionContent>
-                  Yes! Analyzr works with Next.js, React, Vue, plain HTML, and more. Our analytics solution is designed to be framework-agnostic.
+                  Yes! Analyzr works with Next.js, React, Vue, plain HTML, and
+                  more. Our analytics solution is designed to be
+                  framework-agnostic.
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="item-5">
-                <AccordionTrigger>What&apos;s the difference between Analyzr and other analytics tools?</AccordionTrigger>
+                <AccordionTrigger>
+                  What&apos;s the difference between Analyzr and other analytics
+                  tools?
+                </AccordionTrigger>
                 <AccordionContent>
-                  Analyzr stands out by offering free custom event tracking (which others charge for), built-in Discord notifications, and a privacy-focused approach. There&apos;s no complex setup needed, and being completely open source means you have full transparency and control.
+                  Analyzr stands out by offering free custom event tracking
+                  (which others charge for), built-in Discord notifications, and
+                  a privacy-focused approach. There&apos;s no complex setup
+                  needed, and being completely open source means you have full
+                  transparency and control.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
