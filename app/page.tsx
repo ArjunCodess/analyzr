@@ -382,10 +382,10 @@ send_request()`,
       <section className="px-4 py-28 relative overflow-hidden">
         <div className="relative max-w-4xl mx-auto space-y-6 md:space-y-8">
           <div className="space-y-4 md:space-y-6">
-            <h1 className="text-left md:text-center tracking-tight font-bold text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)] lg:leading-[1.15] text-4xl sm:text-5xl md:text-6xl">
+            <h1 className="text-left sm:text-center tracking-tight font-bold text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)] lg:leading-[1.15] text-4xl sm:text-5xl md:text-6xl">
               Analytics that work for <br /> you and your team
             </h1>
-            <div className="text-[0.84rem] text-zinc-400 text-left md:text-center md:text-lg max-w-2xl md:mx-auto">
+            <div className="text-[0.84rem] text-zinc-400 text-left sm:text-center md:text-lg max-w-2xl md:mx-auto">
               Track user behavior, monitor performance metrics, and receive
               real-time notifications across all your platforms. Get the
               insights you need to optimize your application and drive growth.
@@ -399,7 +399,7 @@ send_request()`,
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-8 md:justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-8 sm:justify-center">
             <Link href="/dashboard">
               <Button className="border border-neutral-800 hover:bg-neutral-800">
                 Start for FREE Forever
