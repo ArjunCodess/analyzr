@@ -29,10 +29,12 @@ export default function AddWebsite() {
   const [step, setStep] = useState(1);
   const router = useRouter();
   const [error, setError] = useState("");
+  const [metricsError, setMetricsError] = useState<string | null>(null);
 
   const addWebsite = async () => {
     if (website.trim() === "" || loading) return;
     setLoading(true);
+    setMetricsError(null);
 
     try {
       const { data, error: insertError } = await supabase
@@ -44,20 +46,23 @@ export default function AddWebsite() {
       if (insertError) throw insertError;
 
       if (data && data[0]) {
+        const urlString = website.trim();
+        const fullUrl = `https://${urlString}`;
+        
         try {
-          const urlString = website.trim();
-          const url = new URL(`https://${urlString}`);
+          new URL(fullUrl);
           
-          const metrics = await getPageSpeedMetrics(
-            data[0].name,
-            url.toString()
-          );
+          const metrics = await getPageSpeedMetrics(data[0].name, fullUrl);
           
           if (!metrics) {
-            console.warn('Failed to fetch initial performance metrics');
+            console.warn('Failed to fetch metrics for:', fullUrl);
+            setMetricsError("Unable to fetch performance metrics. You can try again later from the dashboard.");
+          } else {
+            console.log('Successfully fetched metrics for:', fullUrl);
           }
         } catch (metricsError) {
-          console.error('Error fetching performance metrics:', metricsError, 'Website:', website.trim());
+          console.error('Metrics error:', metricsError);
+          setMetricsError("Unable to analyze website performance. You can try again later from the dashboard.");
         }
       }
 
@@ -145,6 +150,11 @@ export default function AddWebsite() {
           </div>
         ) : (
           <div className="space-y-8">
+            {metricsError && (
+              <p className="text-amber-400 text-sm bg-amber-400/10 p-3 rounded-md">
+                {metricsError}
+              </p>
+            )}
             <Snippet />
             <Button
               onClick={() => router.push(`/site/${website.trim()}`)}

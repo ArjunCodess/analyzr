@@ -56,85 +56,74 @@ export async function fetchPageSpeedMetrics(websiteId: string): Promise<Performa
 
 export async function getPageSpeedMetrics(websiteId: string, url: string): Promise<PerformanceMetrics | null> {
   try {
-    // Input validation with specific errors
-    if (!websiteId?.trim()) {
-      throw new Error('[getPageSpeedMetrics] Website ID is required');
-    }
-    
-    if (!url?.trim()) {
-      throw new Error('[getPageSpeedMetrics] Website URL is required');
-    }
-
-    // Validate URL format
-    try {
-      new URL(url);
-    } catch {
-      throw new Error(`[getPageSpeedMetrics] Invalid URL format: ${url}`);
-    }
-
     const API_KEY = process.env.GOOGLE_PAGESPEED_API_KEY;
     if (!API_KEY) {
-      throw new Error('[getPageSpeedMetrics] PageSpeed API key is not configured in environment variables');
+      console.error('PageSpeed API key is missing');
+      return null;
     }
 
-    const cleanWebsiteId = websiteId.toString().replace(/^(https?:\/\/)?(www\.)?/, '').trim();
-    
-    // Website existence check
-    const { data: websiteExists, error: checkError } = await supabase
-      .from('websites')
-      .select('name')
-      .eq('name', cleanWebsiteId)
-      .single();
+    // Clean the website ID
+    const cleanWebsiteId = websiteId.replace(/^(https?:\/\/)?(www\.)?/, '').trim();
 
-    if (checkError) {
-      throw new Error(`[getPageSpeedMetrics] Database error while checking website: ${checkError.message}`);
-    }
-
-    if (!websiteExists) {
-      throw new Error(`[getPageSpeedMetrics] Website not found in database: ${cleanWebsiteId}`);
-    }
-
-    // PageSpeed API call
+    // Construct the PageSpeed API URL
     const encodedUrl = encodeURIComponent(url);
-    const apiUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodedUrl}&category=performance&category=accessibility&category=best-practices&category=seo&key=${API_KEY}`;
+    const apiUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodedUrl}&key=${API_KEY}&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo`;
 
-    const response = await fetch(apiUrl, { cache: 'no-store' });
-    const data = await response.json();
+    // Make the API request with a timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+      },
+      next: { revalidate: 0 }
+    });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(`[getPageSpeedMetrics] PageSpeed API error: ${data.error?.message || `HTTP ${response.status}`}`);
+      console.error('PageSpeed API error:', response.status);
+      return null;
     }
+
+    const data = await response.json();
 
     if (!data.lighthouseResult) {
-      throw new Error('[getPageSpeedMetrics] Invalid PageSpeed API response: Missing lighthouse results');
+      console.error('No lighthouse results in response');
+      return null;
     }
 
-    // Process metrics and update database
-    const metrics = {
+    // Extract metrics
+    const metrics: PerformanceMetrics = {
       firstContentfulPaint: Math.round(data.lighthouseResult.audits['first-contentful-paint'].numericValue),
       largestContentfulPaint: Math.round(data.lighthouseResult.audits['largest-contentful-paint'].numericValue),
       timeToInteractive: Math.round(data.lighthouseResult.audits['interactive'].numericValue),
-      cumulativeLayoutShift: Math.round(data.lighthouseResult.audits['cumulative-layout-shift'].numericValue * 1000),
+      cumulativeLayoutShift: Math.round(data.lighthouseResult.audits['cumulative-layout-shift'].numericValue * 1000) / 1000,
       totalBlockingTime: Math.round(data.lighthouseResult.audits['total-blocking-time'].numericValue),
       performance: Math.round(data.lighthouseResult.categories.performance.score * 100),
       accessibility: Math.round(data.lighthouseResult.categories.accessibility.score * 100),
       bestPractices: Math.round(data.lighthouseResult.categories['best-practices'].score * 100),
       seo: Math.round(data.lighthouseResult.categories.seo.score * 100),
-      speedIndex: Math.round(data.lighthouseResult.audits['speed-index'].numericValue),
+      speedIndex: Math.round(data.lighthouseResult.audits['speed-index'].numericValue)
     };
 
+    // Update the database
     const { error: updateError } = await supabase
       .from('websites')
       .update(metrics)
       .eq('name', cleanWebsiteId);
 
     if (updateError) {
-      throw new Error(`[getPageSpeedMetrics] Failed to update metrics in database: ${updateError.message}`);
+      console.error('Error updating metrics in database:', updateError);
+      return null;
     }
 
     return metrics;
   } catch (error) {
-    console.error('[getPageSpeedMetrics] Error:', error);
-    throw error;
+    console.error('Error in getPageSpeedMetrics:', error);
+    return null;
   }
 }
