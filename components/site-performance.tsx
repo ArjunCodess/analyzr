@@ -223,11 +223,17 @@ export default function Performance({
   useEffect(() => {
     const loadInitialMetrics = async () => {
       if (!websiteId) {
-        setError("Website ID is required");
+        setError("[Performance] Website ID is required");
         return;
       }
-      const data = await fetchPageSpeedMetrics(websiteId);
-      setMetrics(data);
+      try {
+        const data = await fetchPageSpeedMetrics(websiteId);
+        setMetrics(data);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+        setError(`[Performance] Failed to load initial metrics: ${errorMessage}`);
+        console.error('[Performance] Error loading initial metrics:', err);
+      }
     };
 
     loadInitialMetrics();
@@ -235,7 +241,7 @@ export default function Performance({
 
   const refreshMetrics = async () => {
     if (!websiteId || !websiteUrl) {
-      setError("Website ID and URL are required");
+      setError("[Performance] Missing required parameters: website ID or URL");
       return;
     }
 
@@ -245,12 +251,9 @@ export default function Performance({
       const newMetrics = await getPageSpeedMetrics(websiteId, websiteUrl);
       setMetrics(newMetrics);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to fetch performance metrics. Please try again later."
-      );
-      console.error(err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      setError(`[Performance] Failed to fetch metrics: ${errorMessage}`);
+      console.error('[Performance] Error refreshing metrics:', err);
     } finally {
       setLoading(false);
     }

@@ -9,7 +9,7 @@
   var dataDomain = scriptElement.getAttribute("data-domain");
   let queryString = location.search;
   const params = new URLSearchParams(queryString);
-  var source = params.get("utm");
+  var source = params.get("utm") || params.get("ref");
 
   var endpoint = "https://getanalyzr.vercel.app/api/track";
 

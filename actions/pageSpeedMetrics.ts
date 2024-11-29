@@ -5,6 +5,10 @@ import { PerformanceMetrics, WebsiteMetrics } from "@/types";
 
 export async function fetchPageSpeedMetrics(websiteId: string): Promise<PerformanceMetrics | null> {
   try {
+    if (!websiteId?.trim()) {
+      throw new Error('[fetchPageSpeedMetrics] Website ID is required');
+    }
+
     const cleanWebsiteId = websiteId.replace(/^(https?:\/\/)?(www\.)?/, '').trim();
 
     const { data, error } = await supabase
@@ -25,11 +29,12 @@ export async function fetchPageSpeedMetrics(websiteId: string): Promise<Performa
       .single<WebsiteMetrics>();
 
     if (error) {
-      console.error("Error fetching metrics:", error);
-      return null;
+      throw new Error(`[fetchPageSpeedMetrics] Database error: ${error.message}`);
     }
     
-    if (!data) return null;
+    if (!data) {
+      throw new Error(`[fetchPageSpeedMetrics] No metrics found for website: ${cleanWebsiteId}`);
+    }
 
     return {
       firstContentfulPaint: data.firstContentfulPaint || 0,
@@ -44,69 +49,68 @@ export async function fetchPageSpeedMetrics(websiteId: string): Promise<Performa
       speedIndex: data.speedIndex || 0,
     };
   } catch (error) {
-    console.error("Error fetching performance metrics:", error);
-    return null;
+    console.error('[fetchPageSpeedMetrics] Error:', error);
+    throw error;
   }
 }
 
 export async function getPageSpeedMetrics(websiteId: string, url: string): Promise<PerformanceMetrics | null> {
   try {
-    // Improved input validation
+    // Input validation with specific errors
     if (!websiteId?.trim()) {
-      throw new Error('Website ID is required');
+      throw new Error('[getPageSpeedMetrics] Website ID is required');
     }
     
     if (!url?.trim()) {
-      throw new Error('Website URL is required');
+      throw new Error('[getPageSpeedMetrics] Website URL is required');
     }
 
     // Validate URL format
     try {
-      new URL(url); // This will throw if URL is invalid
+      new URL(url);
     } catch {
-      throw new Error('Invalid website URL format');
+      throw new Error(`[getPageSpeedMetrics] Invalid URL format: ${url}`);
     }
 
     const API_KEY = process.env.GOOGLE_PAGESPEED_API_KEY;
     if (!API_KEY) {
-      throw new Error('PageSpeed API key is not configured');
+      throw new Error('[getPageSpeedMetrics] PageSpeed API key is not configured in environment variables');
     }
 
-    // Clean and validate the website ID
     const cleanWebsiteId = websiteId.toString().replace(/^(https?:\/\/)?(www\.)?/, '').trim();
     
-    // Verify that we have a valid website ID
+    // Website existence check
     const { data: websiteExists, error: checkError } = await supabase
       .from('websites')
       .select('name')
       .eq('name', cleanWebsiteId)
       .single();
 
-    if (checkError || !websiteExists) {
-      console.error('Website check error:', checkError);
-      throw new Error(`Website not found: ${cleanWebsiteId}`);
+    if (checkError) {
+      throw new Error(`[getPageSpeedMetrics] Database error while checking website: ${checkError.message}`);
     }
 
+    if (!websiteExists) {
+      throw new Error(`[getPageSpeedMetrics] Website not found in database: ${cleanWebsiteId}`);
+    }
+
+    // PageSpeed API call
     const encodedUrl = encodeURIComponent(url);
     const apiUrl = `https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodedUrl}&category=performance&category=accessibility&category=best-practices&category=seo&key=${API_KEY}`;
-    console.log(apiUrl)
-
-    console.log('Fetching PageSpeed data for:', url);
 
     const response = await fetch(apiUrl, { cache: 'no-store' });
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('PageSpeed API Response:', data);
-      throw new Error(`PageSpeed API error: ${data.error?.message || 'Unknown error'}`);
+      throw new Error(`[getPageSpeedMetrics] PageSpeed API error: ${data.error?.message || `HTTP ${response.status}`}`);
     }
 
     if (!data.lighthouseResult) {
-      console.error('Invalid PageSpeed response:', data);
-      throw new Error('Invalid PageSpeed API response');
+      throw new Error('[getPageSpeedMetrics] Invalid PageSpeed API response: Missing lighthouse results');
     }
 
-    const metrics: PerformanceMetrics = {
+    // Process metrics and update database
+    const metrics = {
       firstContentfulPaint: Math.round(data.lighthouseResult.audits['first-contentful-paint'].numericValue),
       largestContentfulPaint: Math.round(data.lighthouseResult.audits['largest-contentful-paint'].numericValue),
       timeToInteractive: Math.round(data.lighthouseResult.audits['interactive'].numericValue),
@@ -119,31 +123,18 @@ export async function getPageSpeedMetrics(websiteId: string, url: string): Promi
       speedIndex: Math.round(data.lighthouseResult.audits['speed-index'].numericValue),
     };
 
-    // Update the database with new metrics
     const { error: updateError } = await supabase
       .from('websites')
-      .update({
-        firstContentfulPaint: metrics.firstContentfulPaint,
-        largestContentfulPaint: metrics.largestContentfulPaint,
-        timeToInteractive: metrics.timeToInteractive,
-        cumulativeLayoutShift: metrics.cumulativeLayoutShift,
-        totalBlockingTime: metrics.totalBlockingTime,
-        performance: metrics.performance,
-        accessibility: metrics.accessibility,
-        bestPractices: metrics.bestPractices,
-        seo: metrics.seo,
-        speedIndex: metrics.speedIndex,
-      })
+      .update(metrics)
       .eq('name', cleanWebsiteId);
 
     if (updateError) {
-      console.error('Supabase update error:', updateError);
-      throw updateError;
+      throw new Error(`[getPageSpeedMetrics] Failed to update metrics in database: ${updateError.message}`);
     }
 
     return metrics;
   } catch (error) {
-    console.error('Error in getPageSpeedMetrics:', error);
+    console.error('[getPageSpeedMetrics] Error:', error);
     throw error;
   }
 }

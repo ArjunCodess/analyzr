@@ -28,20 +28,21 @@ import {
 } from "@/lib/utils";
 import { fetchActiveUsers } from "@/actions/fetchActiveUsers";
 import { useEffect, useState } from "react";
-import { 
-  FaWindows, 
-  FaApple, 
-  FaLinux, 
-  FaAndroid, 
-  FaMobile, 
-  FaChrome, 
-  FaFirefox, 
-  FaSafari, 
-  FaEdge, 
-  FaOpera 
+import {
+  FaWindows,
+  FaApple,
+  FaLinux,
+  FaAndroid,
+  FaMobile,
+  FaChrome,
+  FaFirefox,
+  FaSafari,
+  FaEdge,
+  FaOpera,
 } from "react-icons/fa";
 import { BsQuestionCircle } from "react-icons/bs";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 interface GeneralAnalyticsProps {
   pageViews: PageView[];
@@ -61,18 +62,20 @@ export default function GeneralAnalytics({
   website,
 }: GeneralAnalyticsProps) {
   const [activeUsers, setActiveUsers] = useState(0);
+  const [showOnlyCountries, setShowOnlyCountries] = useState(false);
 
   useEffect(() => {
+
     const loadActiveUsers = async () => {
       const count = await fetchActiveUsers(website);
       setActiveUsers(count);
     };
 
     loadActiveUsers();
-    
+
     // Refresh active users count every minute
     const interval = setInterval(loadActiveUsers, 60000);
-    
+
     return () => clearInterval(interval);
   }, [website]);
 
@@ -123,10 +126,13 @@ export default function GeneralAnalytics({
 
   // Calculate percentages for sources
   const calculateSourcePercentages = (sources: GroupedSource[]) => {
-    const totalVisitsCount = sources.reduce((sum, source) => sum + source.visits, 0);
-    return sources.map(source => ({
+    const totalVisitsCount = sources.reduce(
+      (sum, source) => sum + source.visits,
+      0
+    );
+    return sources.map((source) => ({
       ...source,
-      percentage: Number(((source.visits / totalVisitsCount) * 100).toFixed(1))
+      percentage: Number(((source.visits / totalVisitsCount) * 100).toFixed(1)),
     }));
   };
 
@@ -136,16 +142,16 @@ export default function GeneralAnalytics({
   const osStats = groupByOS(pageViews);
 
   const getOSIcon = (os: string) => {
-    switch(os.toLowerCase()) {
-      case 'windows':
+    switch (os.toLowerCase()) {
+      case "windows":
         return <FaWindows className="w-4 h-4 text-blue-400" />;
-      case 'macos':
+      case "macos":
         return <FaApple className="w-4 h-4 text-gray-300" />;
-      case 'linux':
+      case "linux":
         return <FaLinux className="w-4 h-4 text-yellow-400" />;
-      case 'android':
+      case "android":
         return <FaAndroid className="w-4 h-4 text-green-400" />;
-      case 'ios':
+      case "ios":
         return <FaMobile className="w-4 h-4 text-gray-300" />;
       default:
         return <BsQuestionCircle className="w-4 h-4 text-neutral-400" />;
@@ -153,14 +159,14 @@ export default function GeneralAnalytics({
   };
 
   const getDeviceIcon = (deviceType: string) => {
-    switch(deviceType.toLowerCase()) {
-      case 'desktop':
+    switch (deviceType.toLowerCase()) {
+      case "desktop":
         return <Monitor className="w-4 h-4 text-blue-400" />;
-      case 'laptop':
+      case "laptop":
         return <Laptop className="w-4 h-4 text-green-400" />;
-      case 'tablet':
+      case "tablet":
         return <Tablet className="w-4 h-4 text-purple-400" />;
-      case 'mobile':
+      case "mobile":
         return <Smartphone className="w-4 h-4 text-red-400" />;
       default:
         return <BsQuestionCircle className="w-4 h-4 text-neutral-400" />;
@@ -168,25 +174,54 @@ export default function GeneralAnalytics({
   };
 
   const getBrowserIcon = (browserName: string) => {
-    switch(browserName.toLowerCase()) {
-      case 'chrome':
+    switch (browserName.toLowerCase()) {
+      case "chrome":
         return <FaChrome className="w-4 h-4 text-blue-400" />;
-      case 'firefox':
+      case "firefox":
         return <FaFirefox className="w-4 h-4 text-orange-400" />;
-      case 'safari':
+      case "safari":
         return <FaSafari className="w-4 h-4 text-blue-300" />;
-      case 'edge':
+      case "edge":
         return <FaEdge className="w-4 h-4 text-blue-500" />;
-      case 'opera':
+      case "opera":
         return <FaOpera className="w-4 h-4 text-red-400" />;
       default:
         return <BsQuestionCircle className="w-4 h-4 text-neutral-400" />;
     }
   };
 
+  // First, calculate the grouped country stats
+  const countryStats = locationStats.reduce((acc, location) => {
+    const existing = acc.find(l => l.country === location.country);
+    if (existing) {
+      existing.visits += location.visits;
+      return acc;
+    }
+    return [...acc, { 
+      country: location.country, 
+      visits: location.visits,
+      city: '',
+      region: ''
+    }];
+  }, [] as typeof locationStats);
+
   // Get grouped data
   const deviceStats = groupByDeviceType(pageViews);
   const browserStats = groupByBrowser(pageViews);
+
+  // Add this near the top of the component where other calculations are done
+  const maxPageViews = Math.max(...groupedPageViews.map((view) => view.visits));
+  const maxSourceViews = Math.max(
+    ...sourcesWithPercentages.map((source) => source.visits)
+  );
+  const maxLocationViews = showOnlyCountries 
+    ? Math.max(...countryStats.map(location => location.visits))
+    : Math.max(...locationStats.map(location => location.visits));
+  const maxOSViews = Math.max(...osStats.map((os) => os.visits));
+  const maxDeviceViews = Math.max(...deviceStats.map((device) => device.count));
+  const maxBrowserViews = Math.max(
+    ...browserStats.map((browser) => browser.count)
+  );
 
   return (
     <>
@@ -264,7 +299,7 @@ export default function GeneralAnalytics({
         />
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
           <CardHeader className="py-0 pt-4 pb-2">
             <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between">
@@ -272,16 +307,24 @@ export default function GeneralAnalytics({
               <BarChart2 className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 relative">
+          <CardContent className="p-0 pt-2 relative">
             <ScrollArea className="h-[300px]">
-              <div className="px-4 space-y-2 pb-4">
+              <div className="px-4 pb-4">
                 {groupedPageViews.map((view, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                    className="flex items-center justify-between bg-[#111111] px-3 py-2 rounded-md relative mb-2"
                   >
-                    <span className="text-sm text-neutral-100 truncate max-w-[90%]">/{view.page}</span>
-                    <span className="font-medium text-white ml-2">
+                    <div
+                      className="absolute left-0 top-0 bottom-0 bg-neutral-800/50 rounded-md"
+                      style={{
+                        width: `${(view.visits / maxPageViews) * 100}%`,
+                      }}
+                    />
+                    <span className="text-sm text-neutral-100 truncate max-w-[80%] relative z-10">
+                      /{view.page}
+                    </span>
+                    <span className="text-sm text-white relative z-10">
                       {abbreviateNumber(view.visits)}
                     </span>
                   </div>
@@ -299,25 +342,24 @@ export default function GeneralAnalytics({
               <ArrowBigUpDash className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 relative">
+          <CardContent className="p-0 pt-2 relative">
             <ScrollArea className="h-[300px]">
-              <div className="px-4 space-y-2 pb-4">
+              <div className="px-4 pb-4">
                 {sourcesWithPercentages.map((source, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                    className="flex items-center justify-between bg-[#111111] px-3 py-2 rounded-md relative mb-2"
                   >
-                    <span className="text-sm text-neutral-100">
-                      {source.source === "" ? "Direct Traffic" : `?utm=${source.source}`}
+                    <div
+                      className="absolute left-0 top-0 bottom-0 bg-neutral-800/50 rounded-md"
+                      style={{ width: `${(source.visits / maxSourceViews) * 100}%` }}
+                    />
+                    <span className="text-sm text-neutral-100 relative z-10">
+                      {source.source === "" || source.source === "direct" ? "Direct Traffic" : source.source}
                     </span>
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm text-neutral-400">
-                        {source.percentage}%
-                      </span>
-                      <span className="font-medium text-white">
-                        {abbreviateNumber(source.visits)}
-                      </span>
-                    </div>
+                    <span className="text-sm text-white relative z-10">
+                      {abbreviateNumber(source.visits)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -328,44 +370,68 @@ export default function GeneralAnalytics({
 
         <Card className="border-neutral-800 bg-[#0a0a0a] backdrop-blur-sm">
           <CardHeader className="py-0 pt-4 pb-2">
-            <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between">
-              <p>Visitor Locations</p>
+            <CardTitle className="text-neutral-300 text-base md:text-lg flex flex-row justify-between items-center">
+              <div className="flex items-center gap-4">
+                <p>Visitor Locations</p>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setShowOnlyCountries(!showOnlyCountries)}
+                  className="text-xs h-6"
+                >
+                  {showOnlyCountries ? "Show All Info" : "Show Countries Only"}
+                </Button>
+              </div>
               <MapPin className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 relative">
+          <CardContent className="p-0 pt-2 relative">
             <ScrollArea className="h-[300px]">
-              <div className="px-4 space-y-2 pb-4">
-                {locationStats.map((location, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
-                  >
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="flex-shrink-0">
-                        <Image 
-                          src={getCountryFlagUrl(location.country)}
-                          alt={`${location.country} flag`}
-                          width="28"
-                          height="21"
-                          className="shadow-sm"
-                          loading="lazy"
-                        />
+              <div className="px-4 pb-4">
+                {(showOnlyCountries ? countryStats : locationStats)
+                  .sort((a, b) => b.visits - a.visits)
+                  .map((location, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between bg-[#111111] px-3 py-2 rounded-md relative mb-2"
+                    >
+                      <div
+                        className="absolute left-0 top-0 bottom-0 bg-neutral-800/50 rounded-md"
+                        style={{ width: `${(location.visits / maxLocationViews) * 100}%` }}
+                      />
+                      <div className="flex items-center gap-4 flex-1 relative z-10">
+                        <div className="flex-shrink-0">
+                          <Image
+                            src={getCountryFlagUrl(location.country)}
+                            alt={`${location.country} flag`}
+                            width="20"
+                            height="15"
+                            className="shadow-sm"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="flex flex-row items-baseline gap-1.5">
+                          {showOnlyCountries ? (
+                            <span className="text-sm font-medium text-neutral-100">
+                              {location.country}
+                            </span>
+                          ) : (
+                            <>
+                              <span className="text-sm font-medium text-neutral-100">
+                                {location.city}
+                              </span>
+                              <span className="text-[11px] text-neutral-400 truncate">
+                                {location.region}, {location.country}
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex flex-col min-w-[200px]">
-                        <span className="text-sm text-neutral-100">
-                          {location.city}
-                        </span>
-                        <span className="text-xs text-neutral-400">
-                          {location.region}, {location.country}
-                        </span>
-                      </div>
+                      <span className="text-sm text-white relative z-10">
+                        {abbreviateNumber(location.visits)}
+                      </span>
                     </div>
-                    <span className="font-medium text-white">
-                      {abbreviateNumber(location.visits)}
-                    </span>
-                  </div>
-                ))}
+                  ))}
               </div>
             </ScrollArea>
             <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
@@ -379,21 +445,25 @@ export default function GeneralAnalytics({
               <Monitor className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 relative">
+          <CardContent className="p-0 pt-2 relative">
             <ScrollArea className="h-[300px]">
-              <div className="px-4 space-y-2 pb-4">
+              <div className="px-4 pb-4">
                 {osStats.map((os, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                    className="flex items-center justify-between bg-[#111111] px-3 py-2 rounded-md relative mb-2"
                   >
-                    <div className="flex items-center gap-2">
+                    <div
+                      className="absolute left-0 top-0 bottom-0 bg-neutral-800/50 rounded-md"
+                      style={{ width: `${(os.visits / maxOSViews) * 100}%` }}
+                    />
+                    <div className="flex items-center gap-2 relative z-10">
                       {getOSIcon(os.operating_system)}
                       <span className="text-sm text-neutral-100">
                         {os.operating_system}
                       </span>
                     </div>
-                    <span className="font-medium text-white">
+                    <span className="text-sm text-white relative z-10">
                       {abbreviateNumber(os.visits)}
                     </span>
                   </div>
@@ -411,21 +481,25 @@ export default function GeneralAnalytics({
               <Smartphone className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 relative">
+          <CardContent className="p-0 pt-2 relative">
             <ScrollArea className="h-[300px]">
-              <div className="px-4 space-y-2 pb-4">
+              <div className="px-4 pb-4">
                 {deviceStats.map(({ deviceType, count }) => (
                   <div
                     key={deviceType}
-                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                    className="flex items-center justify-between bg-[#111111] px-3 py-2 rounded-md relative mb-2"
                   >
-                    <div className="flex items-center gap-2">
+                    <div
+                      className="absolute left-0 top-0 bottom-0 bg-neutral-800/50 rounded-md"
+                      style={{ width: `${(count / maxDeviceViews) * 100}%` }}
+                    />
+                    <div className="flex items-center gap-2 relative z-10">
                       {getDeviceIcon(deviceType)}
                       <span className="text-sm text-neutral-100">
                         {capitalizeFirstLetter(deviceType)}
                       </span>
                     </div>
-                    <span className="font-medium text-white">
+                    <span className="text-sm text-white relative z-10">
                       {abbreviateNumber(count)}
                     </span>
                   </div>
@@ -443,21 +517,25 @@ export default function GeneralAnalytics({
               <Globe className="w-6 h-6" />
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 relative">
+          <CardContent className="p-0 pt-2 relative">
             <ScrollArea className="h-[300px]">
-              <div className="px-4 space-y-2 pb-4">
+              <div className="px-4 pb-4">
                 {browserStats.map(({ browser, count }) => (
                   <div
                     key={browser}
-                    className="flex items-center justify-between border my-2 border-neutral-800 p-4 transition-colors hover:bg-neutral-900/20 rounded-md"
+                    className="flex items-center justify-between bg-[#111111] px-3 py-2 rounded-md relative mb-2"
                   >
-                    <div className="flex items-center gap-2">
+                    <div
+                      className="absolute left-0 top-0 bottom-0 bg-neutral-800/50 rounded-md"
+                      style={{ width: `${(count / maxBrowserViews) * 100}%` }}
+                    />
+                    <div className="flex items-center gap-2 relative z-10">
                       {getBrowserIcon(browser)}
                       <span className="text-sm text-neutral-100">
                         {browser}
                       </span>
                     </div>
-                    <span className="font-medium text-white">
+                    <span className="text-sm text-white relative z-10">
                       {abbreviateNumber(count)}
                     </span>
                   </div>

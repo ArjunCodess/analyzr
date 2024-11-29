@@ -80,7 +80,6 @@ export interface PageView {
   operating_system?: string;
   device_type?: string;
   browser_name?: string;
-  screen_resolution?: string;
 }
 
 export interface Visit {
