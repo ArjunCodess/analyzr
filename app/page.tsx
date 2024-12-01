@@ -2,7 +2,7 @@ import React from "react";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { BlurFade } from "@/components/ui/blur-fade";
-import { FEATURES } from "@/lib/constants";
+import { FEATURES, TESTIMONIALS, TWEETS } from "@/lib/constants";
 import { MockDiscordUI } from "@/components/mock-discord-ui";
 import { AnimatedList } from "@/components/ui/animated-list";
 import { DiscordMessage } from "@/components/discord-message";
@@ -16,6 +16,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import CodeBlock from "@/components/code-block";
+import { Tweet } from "react-tweet";
+import Testimonial from "@/components/testimonial";
 
 export default function Home() {
   const setupSnippets = [
@@ -45,7 +47,7 @@ export default function Home() {
   const eventSnippets = [
     {
       name: "JavaScript",
-      language: "javascript", 
+      language: "javascript",
       filename: "events.js",
       code: `const axios = require('axios');
   
@@ -84,7 +86,7 @@ sendRequest();`,
     {
       name: "Python",
       language: "python",
-      filename: "events.py", 
+      filename: "events.py",
       code: `import requests
   
 API_KEY = "YOUR_API_KEY"
@@ -117,7 +119,7 @@ def send_request():
         print("Error:", error)
   
 send_request()`,
-    }
+    },
   ];
 
   return (
@@ -253,6 +255,62 @@ send_request()`,
         </section>
       </BlurFade>
 
+      <section className="py-14 md:py-20 relative">
+        <div className="max-w-screen-xl mx-auto px-4 text-gray-400 md:px-8">
+          <div className="relative max-w-2xl mx-auto sm:text-center">
+            <div className="relative">
+              <h3 className="text-gray-200 text-3xl font-normal tracking-tighter md:text-5xl sm:text-4xl">
+                What our users say
+              </h3>
+              <p className="mt-3 text-gray-200">
+                Join thousands of developers who trust Analyzr for their
+                analytics needs. See what our users have to say about their
+                experience with our platform.
+              </p>
+            </div>
+            <div
+              className="absolute inset-0 max-w-xs mx-auto h-44 blur-[118px]"
+              style={{
+                background:
+                  "linear-gradient(152.92deg, rgba(37, 99, 235, 0.2) 4.54%, rgba(59, 130, 246, 0.26) 34.2%, rgba(37, 99, 235, 0.1) 77.55%)",
+              }}
+            ></div>
+          </div>
+          <div className="relative mt-12">
+            <ul className="columns-1 sm:columns-2 max-w-[70rem] mx-auto dark">
+              {TWEETS.map((tweet, idx) => {
+                const tweetId = tweet.split("/").pop();
+                return (
+                  <BlurFade
+                    key={idx}
+                    delay={0.8 + idx * 0.1}
+                    className="flex justify-center items-start"
+                  >
+                    <div className="w-full">
+                      <Tweet
+                        id={tweetId}
+                        apiUrl="https://api.twitter.com/2/tweets"
+                      />
+                    </div>
+                  </BlurFade>
+                );
+              })}
+              {TESTIMONIALS.map((item, idx) => (
+                <BlurFade
+                  key={idx}
+                  delay={0.8 + idx * 0.1}
+                  className="flex justify-center items-start"
+                >
+                  <div className="w-full">
+                    <Testimonial name={item.name} role={item.role} testimonial={item.testimonial} avatarSrc={item.avatarSrc} />
+                  </div>
+                </BlurFade>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <section className="py-14 relative">
         <BlurFade delay={0.8}>
           <div
@@ -365,16 +423,16 @@ send_request()`,
                 Simple as that.
               </h3>
               <p className="mt-3 text-gray-200">
-                Get started quickly with ready-to-use code examples.
-                Copy, paste and customize to integrate event tracking in minutes.
+                Get started quickly with ready-to-use code examples. Copy, paste
+                and customize to integrate event tracking in minutes.
               </p>
             </div>
           </div>
 
-          <CodeBlock 
-            setupFiles={setupSnippets} 
-            eventFiles={eventSnippets} 
-            className="shadow-2xl" 
+          <CodeBlock
+            setupFiles={setupSnippets}
+            eventFiles={eventSnippets}
+            className="shadow-2xl"
           />
         </div>
       </section>

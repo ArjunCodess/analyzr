@@ -82,17 +82,88 @@ export const FEATURES = [
 ];
 
 export const PERFORMANCE_METRICS = [
-  'performance',
-  'accessibility', 
-  'bestPractices',
-  'seo'
+  "performance",
+  "accessibility",
+  "bestPractices",
+  "seo",
 ];
 
 export const DETAILED_METRICS = [
-  { label: 'First Contentful Paint', key: 'firstContentfulPaint', format: 'time' },
-  { label: 'Largest Contentful Paint', key: 'largestContentfulPaint', format: 'time' },
-  { label: 'Time to Interactive', key: 'timeToInteractive', format: 'time' },
-  { label: 'Total Blocking Time', key: 'totalBlockingTime', format: 'time' },
-  { label: 'Cumulative Layout Shift', key: 'cumulativeLayoutShift', format: 'shift' },
-  { label: 'Speed Index', key: 'speedIndex', format: 'time' }
+  {
+    label: "First Contentful Paint",
+    key: "firstContentfulPaint",
+    format: "time",
+  },
+  {
+    label: "Largest Contentful Paint",
+    key: "largestContentfulPaint",
+    format: "time",
+  },
+  { label: "Time to Interactive", key: "timeToInteractive", format: "time" },
+  { label: "Total Blocking Time", key: "totalBlockingTime", format: "time" },
+  {
+    label: "Cumulative Layout Shift",
+    key: "cumulativeLayoutShift",
+    format: "shift",
+  },
+  { label: "Speed Index", key: "speedIndex", format: "time" },
+];
+
+export const TWEETS = [
+  "https://x.com/kelmedev/status/1861146824767107505",
+  "https://x.com/GbenegbaraM/status/1860760001842717098",
+  "https://x.com/Adityaguptareal/status/1860702277683515899",
+  "https://x.com/namish_855/status/1859569277444993512",
+  "https://x.com/amiswa2005/status/1858299362801033720",
+];
+
+export const TESTIMONIALS = [
+  {
+    name: "Camin McCluskey",
+    role: "Co-Founder & CTO @Stackfix",
+    testimonial:
+      `Congrats on the launch and wow what a superb onboarding experience. I needed something super quick to setup ahead of my PH launch and couldn't be bothered with the usual pain of GA or Segment. I found this literally 60s ago and I'm up and running with analytics. Fantastic job @arjuncodess! Also really cool that you've blogged about how you built it, looking forward to diving into that as well`,
+    avatarSrc:
+      "https://ph-avatars.imgix.net/2602606/bcf13036-8a9b-4c32-ba86-60308e59242f.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=36&h=36&fit=crop&dpr=2",
+  },
+  {
+    name: "Sahith",
+    role: "Product and Brand Marketing",
+    testimonial:
+      "looks like a great product. will give it a shot soon! Congos on the launch!",
+    avatarSrc:
+      "https://ph-avatars.imgix.net/1637320/368c9df7-48b8-4ef2-9a6c-db209507d8cd.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=36&h=36&fit=crop&dpr=2",
+  },
+  {
+    name: "ZanBuildz",
+    role: "AI enthusiast and SaaS builder",
+    testimonial:
+      "Really useful product and a great initiative! hats off to the maker @arjuncodess",
+    avatarSrc:
+      "https://ph-avatars.imgix.net/7861658/original.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=36&h=36&fit=crop&dpr=2",
+  },
+  {
+    name: "Huzaifa Shoukat",
+    role: "CEO @Accento AI",
+    testimonial:
+      "Congrats on the launch! GetAnalyzr looks like a game-changer for devs.",
+    avatarSrc:
+      "https://ph-avatars.imgix.net/6221718/1dae9053-aebc-4762-b5d9-db8777ab10b2.png?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=36&h=36&fit=crop&dpr=2",
+  },
+  {
+    name: "Yusuf ZQ",
+    role: "Founder & CEO of WordWeave",
+    testimonial:
+      "cool work, Arjun!",
+    avatarSrc:
+      "https://ph-avatars.imgix.net/7822537/e4aebbf0-84b3-424c-b073-48a4bd4cfbb1.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=36&h=36&fit=crop&dpr=2",
+  },
+  {
+    name: "Fred Marcoux",
+    role: "Founder @ weever.ai & Let's Spit",
+    testimonial:
+      "Very great design!",
+    avatarSrc:
+      "https://ph-avatars.imgix.net/5117975/20a331aa-c28f-4c97-8163-83eef2440518.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=36&h=36&fit=crop&dpr=2",
+  },
 ];
