@@ -8,11 +8,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export function abbreviateNumber(number: number): string {
   if (number >= 1000000) {
-    return (number / 1000000).toFixed(1) + "M";
+    return (Math.round((number / 1000000) * 100) / 100).toFixed(2) + "M";
   } else if (number >= 1000) {
-    return (number / 1000).toFixed(1) + "K";
+    return (Math.round((number / 1000) * 100) / 100).toFixed(2) + "K";
   }
-  return number.toString();
+  return Number.isInteger(number) ? number.toString() : (Math.round(number * 100) / 100).toFixed(2);
 }
 
 export function calculatePagesPerSession(pageViews: PageView[], totalVisits: Visit[]): string {

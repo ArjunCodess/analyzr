@@ -10,7 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpRightIcon, RefreshCcw } from "lucide-react";
+import {
+  ArrowUpRightIcon,
+  RefreshCcw,
+} from "lucide-react";
 import {
   GroupedSource,
   GroupedView,
@@ -31,6 +34,7 @@ import Performance from "@/components/site-performance";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/config/supabase";
+import StatsBox from "@/components/24hour-stats-box";
 
 export default function AnalyticsPage() {
   const { website } = useParams();
@@ -51,10 +55,11 @@ export default function AnalyticsPage() {
   const [activeCustomEventTab, setActiveCustomEventTab] = useState("");
   const [filterValue, setFilterValue] = useState("0");
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [showStatsBox, setShowStatsBox] = useState(true);
 
   useEffect(() => {
     if (!userLoading && !user) {
-      router.push('/sign-in');
+      router.push("/sign-in");
     }
   }, [user, userLoading, router]);
 
@@ -88,7 +93,7 @@ export default function AnalyticsPage() {
   const handleFilterChange = useCallback(
     async (value: string) => {
       if (!isAuthorized) return;
-      
+
       setLoading(true);
       try {
         const result = await fetchViews(website as string, value);
@@ -146,9 +151,26 @@ export default function AnalyticsPage() {
     return <NoPageViewsState website={website as string} />;
   }
 
+  const pageViews24h = pageViews.filter(
+    (pv) => new Date(pv.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+  ).length;
+  const totalVisits24h = totalVisits.filter(
+    (v) => new Date(v.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+  ).length;
+
   return (
     <div className="min-h-screen px-4 py-12">
       <div className="mx-auto max-w-7xl">
+        {showStatsBox && (
+          <StatsBox
+            pageViews24h={pageViews24h}
+            totalVisits24h={totalVisits24h}
+            pageViews={pageViews.length}
+            totalVisits={totalVisits.length}
+            onClose={() => setShowStatsBox(false)}
+          />
+        )}
+
         <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div className="space-y-1">
             <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white flex flex-row">
@@ -228,8 +250,8 @@ export default function AnalyticsPage() {
           </TabsContent>
 
           <TabsContent value="performance">
-            <Performance 
-              websiteId={website as string} 
+            <Performance
+              websiteId={website as string}
               websiteUrl={`https://${website}`}
             />
           </TabsContent>

@@ -235,9 +235,11 @@ export default function GeneralAnalytics({
                   Total Visits
                 </span>
               </div>
-              <span className="text-base md:text-lg font-bold tracking-tight text-white">
-                {abbreviateNumber(totalVisits.length)}
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="text-base md:text-lg font-bold tracking-tight text-white">
+                  {abbreviateNumber(totalVisits.length)}
+                </span>
+              </div>
             </CardTitle>
           </CardHeader>
         </Card>
@@ -251,9 +253,11 @@ export default function GeneralAnalytics({
                   Page Views
                 </span>
               </div>
-              <span className="text-base md:text-lg font-bold tracking-tight text-white">
-                {abbreviateNumber(pageViews.length)}
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="text-base md:text-lg font-bold tracking-tight text-white">
+                  {abbreviateNumber(pageViews.length)}
+                </span>
+              </div>
             </CardTitle>
           </CardHeader>
         </Card>
