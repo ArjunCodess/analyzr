@@ -10,29 +10,21 @@ import {
 import { Plus } from "lucide-react";
 import AddWebsite from "@/components/add-website";
 import useUser from "@/hooks/useUser";
-import { useEffect, useState } from "react";
 import { WebsiteCard } from "@/components/website-card";
 import Loading from "@/components/loading";
-import { Website } from "@/types";
 import { fetchWebsitesWithAnalytics } from "@/actions/fetchAnalytics";
 import { supabase } from "@/config/supabase";
-
-interface WebsiteWithAnalytics extends Website {
-  visitors_24h?: number;
-  pageviews_24h?: number;
-}
+import useSWR from 'swr';
 
 export default function DashboardPage() {
   const { user } = useUser();
-  const [websites, setWebsites] = useState<WebsiteWithAnalytics[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadWebsites = async () => {
-      if (!user?.id) return;
+  const { data: websites, isLoading } = useSWR(
+    user?.id ? ['websites', user.id] : null,
+    async () => {
+      if (!user?.id) return [];
       
       try {
-        setLoading(true);
         const websitesData = await fetchWebsitesWithAnalytics(user.id);
         
         // Fetch 24h stats for each website
@@ -62,18 +54,20 @@ export default function DashboardPage() {
           })
         );
 
-        setWebsites(websitesWith24hStats);
+        return websitesWith24hStats;
       } catch (error) {
         console.error("Error loading websites:", error);
-      } finally {
-        setLoading(false);
+        return [];
       }
-    };
+    },
+    {
+      refreshInterval: 30000, // Refresh every 30 seconds
+      revalidateOnFocus: false,
+      dedupingInterval: 10000
+    }
+  );
 
-    loadWebsites();
-  }, [user]);
-
-  if (loading) return <Loading text="Getting your websites..." />;
+  if (isLoading) return <Loading text="Getting your websites..." />;
 
   return (
     <div className="min-h-screen bg-neutral-900/10 p-4 sm:p-6 lg:p-8">
@@ -93,7 +87,7 @@ export default function DashboardPage() {
             </DialogContent>
           </Dialog>
         </div>
-        {websites.length === 0 ? (
+        {!websites || websites.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-neutral-400">No websites added yet.</p>
           </div>

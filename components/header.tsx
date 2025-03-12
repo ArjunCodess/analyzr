@@ -30,7 +30,7 @@ export default function Header() {
 
   return (
     <header className="border-b px-4 border-neutral-800">
-      <div className="container mx-auto">
+      <div className="container mx-auto max-w-screen-xl mx-auto">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex-shrink-0">
