@@ -68,7 +68,7 @@ export default function Footer() {
       </div>
 
       <p className="text-sm text-neutral-500">
-        © 2024 Analyzr. Complete analytics and monitoring for modern applications.
+        © 2025 Analyzr. Complete analytics and monitoring for modern applications.
       </p>
     </footer>
   );

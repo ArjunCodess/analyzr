@@ -112,8 +112,6 @@ export const DETAILED_METRICS = [
 export const TWEETS = [
   "https://x.com/kelmedev/status/1861146824767107505",
   "https://x.com/GbenegbaraM/status/1860760001842717098",
-  "https://x.com/Adityaguptareal/status/1860702277683515899",
-  "https://x.com/namish_855/status/1859569277444993512",
   "https://x.com/amiswa2005/status/1858299362801033720",
 ];
 

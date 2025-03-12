@@ -35,27 +35,83 @@ import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/config/supabase";
 import StatsBox from "@/components/24hour-stats-box";
+import useSWR from 'swr';
 
 export default function AnalyticsPage() {
   const { website } = useParams();
   const { user, loading: userLoading } = useUser();
   const router = useRouter();
-
-  const [pageViews, setPageViews] = useState<PageView[]>([]);
-  const [totalVisits, setTotalVisits] = useState<Visit[]>([]);
-  const [customEvents, setCustomEvents] = useState<CustomEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [groupedPageViews, setGroupedPageViews] = useState<GroupedView[]>([]);
-  const [groupedPageSources, setGroupedPageSources] = useState<GroupedSource[]>(
-    []
-  );
-  const [groupedCustomEvents, setGroupedCustomEvents] = useState<
-    Record<string, number>
-  >({});
-  const [activeCustomEventTab, setActiveCustomEventTab] = useState("");
   const [filterValue, setFilterValue] = useState("0");
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [showStatsBox, setShowStatsBox] = useState(true);
+
+  // Website ownership check with SWR
+  const { data: authorized, isLoading: authLoading } = useSWR(
+    user ? ['websiteOwnership', user.id, website] : null,
+    async () => {
+      try {
+        const { data, error } = await supabase
+          .from("websites")
+          .select("id")
+          .eq("name", website)
+          .eq("user_id", user!.id)
+          .single();
+
+        if (error || !data) {
+          router.push("/dashboard");
+          return false;
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Error checking website ownership:", error);
+        router.push("/dashboard");
+        return false;
+      }
+    },
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000,
+    }
+  );
+
+  // Analytics data fetching with SWR
+  const { data: analyticsData, isLoading: dataLoading, mutate: refreshAnalytics } = useSWR(
+    authorized ? ['analytics', website, filterValue] : null,
+    async () => {
+      try {
+        const result = await fetchViews(website as string, filterValue);
+        if (result.error) {
+          console.error(result.error);
+          return null;
+        }
+
+        return {
+          pageViews: result.pageViews || [],
+          visits: result.visits || [],
+          customEvents: result.customEvents || [],
+          groupedPageViews: groupPageViews(result.pageViews || []),
+          groupedPageSources: groupPageSources(result.visits || []),
+          groupedCustomEvents: (result.customEvents || []).reduce<Record<string, number>>(
+            (acc, event) => {
+              if (event?.event_name) {
+                acc[event.event_name] = (acc[event.event_name] || 0) + 1;
+              }
+              return acc;
+            },
+            {}
+          ),
+        };
+      } catch (error) {
+        console.error("Error updating views:", error);
+        return null;
+      }
+    },
+    {
+      refreshInterval: 30000, // Refresh every 30 seconds
+      revalidateOnFocus: false,
+      dedupingInterval: 10000,
+    }
+  );
 
   useEffect(() => {
     if (!userLoading && !user) {
@@ -63,98 +119,30 @@ export default function AnalyticsPage() {
     }
   }, [user, userLoading, router]);
 
-  const checkWebsiteOwnership = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from("websites")
-        .select("id")
-        .eq("name", website)
-        .eq("user_id", user.id)
-        .single();
-
-      if (error || !data) {
-        setIsAuthorized(false);
-        router.push("/dashboard");
-        return false;
-      }
-
-      setIsAuthorized(true);
-      return true;
-    } catch (error) {
-      console.error("Error checking website ownership:", error);
-      setIsAuthorized(false);
-      router.push("/dashboard");
-      return false;
-    }
-  }, [user, website, router]);
-
   const handleFilterChange = useCallback(
-    async (value: string) => {
-      if (!isAuthorized) return;
-
-      setLoading(true);
-      try {
-        const result = await fetchViews(website as string, value);
-        if (result.error) {
-          console.error(result.error);
-          return;
-        }
-
-        setPageViews(result.pageViews || []);
-        setTotalVisits(result.visits || []);
-        setCustomEvents(result.customEvents || []);
-        setGroupedPageViews(groupPageViews(result.pageViews || []));
-        setGroupedPageSources(groupPageSources(result.visits || []));
-
-        const newGroupedEvents = (result.customEvents || []).reduce<
-          Record<string, number>
-        >((acc, event) => {
-          if (event?.event_name) {
-            acc[event.event_name] = (acc[event.event_name] || 0) + 1;
-          }
-          return acc;
-        }, {});
-        setGroupedCustomEvents(newGroupedEvents);
-        setFilterValue(value);
-      } catch (error) {
-        console.error("Error updating views:", error);
-      } finally {
-        setLoading(false);
-      }
+    (value: string) => {
+      setFilterValue(value);
+      refreshAnalytics();
     },
-    [website, isAuthorized]
+    [refreshAnalytics]
   );
 
-  useEffect(() => {
-    if (user) {
-      checkWebsiteOwnership();
-    }
-  }, [checkWebsiteOwnership, user]);
-
-  useEffect(() => {
-    if (isAuthorized === true) {
-      handleFilterChange("0");
-    }
-  }, [isAuthorized, handleFilterChange]);
-
-  if (userLoading || isAuthorized === null || loading) {
+  if (userLoading || authLoading || dataLoading) {
     return <Loading text="Getting your data..." />;
   }
 
-  if (!isAuthorized) {
+  if (!authorized) {
     return null;
   }
 
-  if (pageViews?.length === 0 && !loading) {
+  if (!analyticsData?.pageViews || analyticsData.pageViews.length === 0) {
     return <NoPageViewsState website={website as string} />;
   }
 
-  const pageViews24h = pageViews.filter(
+  const pageViews24h = analyticsData.pageViews.filter(
     (pv) => new Date(pv.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
   ).length;
-  const totalVisits24h = totalVisits.filter(
+  const totalVisits24h = analyticsData.visits.filter(
     (v) => new Date(v.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
   ).length;
 
@@ -165,8 +153,8 @@ export default function AnalyticsPage() {
           <StatsBox
             pageViews24h={pageViews24h}
             totalVisits24h={totalVisits24h}
-            pageViews={pageViews.length}
-            totalVisits={totalVisits.length}
+            pageViews={analyticsData.pageViews.length}
+            totalVisits={analyticsData.visits.length}
             onClose={() => setShowStatsBox(false)}
           />
         )}
@@ -240,10 +228,10 @@ export default function AnalyticsPage() {
 
           <TabsContent value="general">
             <GeneralAnalytics
-              pageViews={pageViews}
-              totalVisits={totalVisits}
-              groupedPageViews={groupedPageViews}
-              groupedPageSources={groupedPageSources}
+              pageViews={analyticsData.pageViews}
+              totalVisits={analyticsData.visits}
+              groupedPageViews={analyticsData.groupedPageViews}
+              groupedPageSources={analyticsData.groupedPageSources}
               filterValue={filterValue}
               website={website as string}
             />
@@ -258,10 +246,10 @@ export default function AnalyticsPage() {
 
           <TabsContent value="custom-events">
             <SiteCustomEvents
-              customEvents={customEvents}
-              groupedCustomEvents={groupedCustomEvents}
-              activeCustomEventTab={activeCustomEventTab}
-              setActiveCustomEventTab={setActiveCustomEventTab}
+              customEvents={analyticsData.customEvents}
+              groupedCustomEvents={analyticsData.groupedCustomEvents}
+              activeCustomEventTab=""
+              setActiveCustomEventTab={() => {}}
             />
           </TabsContent>
 

@@ -277,7 +277,7 @@ send_request()`,
             ></div>
           </div>
           <div className="relative mt-12">
-            <ul className="columns-1 sm:columns-2 max-w-[70rem] mx-auto dark">
+            <ul className="columns-1 sm:columns-2 max-w-[70rem] mx-auto dark [&>*]:break-inside-avoid-column">
               {TWEETS.map((tweet, idx) => {
                 const tweetId = tweet.split("/").pop();
                 return (
